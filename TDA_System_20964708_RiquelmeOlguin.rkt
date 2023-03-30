@@ -1,6 +1,9 @@
 #lang racket/base
 (require racket/date)
 
+(require "TDA_Drive_20964708_RiquelmeOlguin.rkt")
+(provide (all-defined-out))
+
 
 ;Contructor system
 (define (make-system nombre drive usuarios ruta fecha-actual)
@@ -51,9 +54,7 @@
 (define run(lambda (system comando)(comando system)))
 
 
-;DRIVE Contructor
-(define (make-drive letra nombre capacidad)
-  (list letra nombre capacidad))
+
 
 
 ;RUN
@@ -71,6 +72,8 @@
                        (get-fecha system))
           system))))
 
+                       
+
 
 
 
@@ -82,6 +85,10 @@
 (define S2 ((run S1 add-drive) #\C "SO1" 3000))
 (define S3 ((run S2 add-drive) #\D "Util" 2000))
 
+S0
+S1
+S2
+S3
 
 
 
