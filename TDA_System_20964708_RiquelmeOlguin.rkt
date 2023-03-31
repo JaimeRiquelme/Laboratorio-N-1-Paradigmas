@@ -2,15 +2,16 @@
 (require racket/date)
 
 (require "TDA_Drive_20964708_RiquelmeOlguin.rkt")
+(require "TDA_User_20964708_RiquelmeOlguin.rkt")
 (provide (all-defined-out))
 
 
 ;Contructor system
-(define (make-system nombre drive usuarios ruta fecha-actual)
-  (list nombre drive usuarios ruta fecha-actual))
+(define (make-system nombre drive usuarios ruta fecha-actual logeado)
+  (list nombre drive usuarios ruta fecha-actual logeado))
 
 (define (system nombre)
-  (make-system nombre null null null (fecha-actual)))
+  (make-system nombre '() '() "/ruta/default" (fecha-actual) '()))
 
 (define get-nombre (lambda (system) (car system)))
 
@@ -18,25 +19,32 @@
 
 (define get-usuarios (lambda (system) (caddr system)))
 
-(define get-ruta (lambda(system)(cadr(reverse system))))
+(define get-ruta (lambda(system)(caddr(reverse system))))
 
-(define get-fecha (lambda (system) (car (reverse system))))
+(define get-fecha (lambda (system) (cadr (reverse system))))
 
-(define set-nombre-system (lambda (system-nombre nombre)
-                            (make-system nombre (get-drive system-nombre)(get-usuarios system-nombre)
-                                         (get-ruta system-nombre)(get-fecha system-nombre))))
-(define set-drive-system(lambda (system drive)
-                          (make-system (get-nombre system) drive
-                                       (get-usuarios system) (get-ruta system) (get-fecha system))))
+(define get-login (lambda(system)(car(reverse system))))
 
-(define set-usuarios-system(lambda (system usuarios)(make-system
-                                       (get-nombre system) (get-drive system) usuarios (get-ruta system) (get-fecha system))))
+(define set-nombre-system (lambda (system-nombre nombre)(make-system nombre (get-drive system-nombre) (get-usuarios system-nombre)
+                 (get-ruta system-nombre) (get-fecha system-nombre) (get-login system-nombre))))
 
-(define set-ruta-system(lambda (system ruta)(make-system (get-nombre system)
-                                        (get-drive system) (get-usuarios system) ruta (get-fecha system))))
+(define set-drive-system(lambda (system drive)(make-system (get-nombre system) drive (get-usuarios system) (get-ruta system)
+                 (get-fecha system) (get-login system))))
 
-(define set-fecha-system(lambda (system fecha)(make-system (get-nombre system)
-                                        (get-drive system) (get-usuarios system) (get-ruta system) fecha)))
+(define set-usuarios-system(lambda (system usuarios)(make-system (get-nombre system) (get-drive system) usuarios (get-ruta system)
+                 (get-fecha system) (get-login system))))
+
+(define set-ruta-system(lambda (system ruta)(make-system (get-nombre system) (get-drive system) (get-usuarios system) ruta
+                 (get-fecha system) (get-login system))))
+
+(define set-fecha-system(lambda (system fecha)(make-system (get-nombre system) (get-drive system) (get-usuarios system) (get-ruta system)
+                 fecha (get-login system))))
+
+
+(define set-login-system(lambda (system user)(make-system (get-nombre system)
+                                        (get-drive system)(set-login-list system (login-list user))(get-ruta system)
+                                        (get-fecha system))))
+
 
 (define (fecha-actual)(define fecha (current-date))
         (list (date-day fecha)
@@ -69,10 +77,51 @@
                        (cons (make-drive letra nombre capacidad) (get-drive system))
                        (get-usuarios system)
                        (get-ruta system)
-                       (get-fecha system))
+                       (get-fecha system)
+                       (get-login system)) ; Agregar el usuario logeado actualmente en el sistema
           system))))
 
-                       
+
+
+(define add-user
+  (lambda (system)
+    (lambda (name-user)
+      (if (member name-user (map car (get-usuarios system)))
+          (begin
+            (display "Usuario ya existe: ")
+            (display name-user)
+            (display "\n")
+            system)
+          (make-system (get-nombre system)
+                       (get-drive system)
+                       (append (get-usuarios system) (list (make-user name-user)))
+                       (get-ruta system)
+                       (fecha-actual)
+                       (get-login-list system))))))
+
+
+(define login
+  (lambda (system)
+    (lambda (name-user)
+      (if (member name-user (map car (get-usuarios system)))
+          (if (null? (get-login-list system))
+              (set-login-list (set-usuarios-system system (append (get-usuarios system) (list (make-user name-user)))) (login-list name-user))
+              (display "Ya hay un usuario conectado\n"))
+          (display "Usuario no existe\n"))
+      (set-usuarios-system system (get-usuarios system)))))
+
+
+
+(define get-login-list (lambda (system) (cadr (reverse system))))
+
+(define set-login-list (lambda (system login-list) (make-system (get-nombre system)
+                                                               (get-drive system)
+                                                               (get-usuarios system)
+                                                               (get-ruta system)
+                                                               (list (get-fecha system) login-list))))
+(define (login-list name)
+  (cons name '()))
+
 
 
 
@@ -85,10 +134,25 @@
 (define S2 ((run S1 add-drive) #\C "SO1" 3000))
 (define S3 ((run S2 add-drive) #\D "Util" 2000))
 
+;añadiendo usuarios. Incluye caso S6 que intenta registrar usuario duplicado
+(define S4 ((run S3 add-user) "user1"))
+(define S5 ((run S4 add-user) "user1"))
+(define S6 ((run S5 add-user) "user2"))
+
+;iniciando sesión con usuarios. Incluye caso S8 que intenta iniciar sesión con user2 sin antes haber salido con user1
+(define S7 ((run S6 login) "user1"))
+(define S8 ((run S7 login) "user2"))
+
+
 S0
 S1
 S2
 S3
+S4
+S5
+S6
+S7
+S8
 
 
 
