@@ -40,10 +40,9 @@
 (define set-fecha-system(lambda (system fecha)(make-system (get-nombre system) (get-drive system) (get-usuarios system) (get-ruta system)
                  fecha (get-login system))))
 
+(define (set-logeado system user)(make-system(get-nombre system)(get-drive system)(get-usuarios system)(get-ruta system)(get-fecha system)user))
 
-(define set-login-system(lambda (system user)(make-system (get-nombre system)
-                                        (get-drive system)(set-login-list system (login-list user))(get-ruta system)
-                                        (get-fecha system))))
+
 
 
 (define (fecha-actual)(define fecha (current-date))
@@ -97,30 +96,29 @@
                        (append (get-usuarios system) (list (make-user name-user)))
                        (get-ruta system)
                        (fecha-actual)
-                       (get-login-list system))))))
+                       (get-login system))))))
 
 
 (define login
   (lambda (system)
     (lambda (name-user)
       (if (member name-user (map car (get-usuarios system)))
-          (if (null? (get-login-list system))
-              (set-login-list (set-usuarios-system system (append (get-usuarios system) (list (make-user name-user)))) (login-list name-user))
+          (if (null? (get-usuarios system))
+              (begin
+                (set-usuarios-system (set-usuarios-system system (append (get-usuarios system) (list (make-user name-user)))))
+                (set-logeado (set-usuarios-system system name-user) #t)
+                (display "Usuario conectado\n"))
               (display "Ya hay un usuario conectado\n"))
           (display "Usuario no existe\n"))
       (set-usuarios-system system (get-usuarios system)))))
 
 
 
-(define get-login-list (lambda (system) (cadr (reverse system))))
 
-(define set-login-list (lambda (system login-list) (make-system (get-nombre system)
-                                                               (get-drive system)
-                                                               (get-usuarios system)
-                                                               (get-ruta system)
-                                                               (list (get-fecha system) login-list))))
-(define (login-list name)
-  (cons name '()))
+
+
+
+
 
 
 
