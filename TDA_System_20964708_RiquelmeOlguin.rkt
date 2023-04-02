@@ -111,7 +111,7 @@
   (lambda (system)
     (lambda (name-user)
       (if (member name-user (map car (get-usuarios system)))
-          (if (not (get-login system))
+          (if (null? (get-login system))
               (set-logeado (set-usuarios-system system (append (get-usuarios system) (list (make-user name-user)))) name-user)
               (begin
                 (display "Ya hay un usuario conectado\n")
@@ -119,15 +119,6 @@
           (begin
             (display "Usuario no existe\n")
             system)))))
-
-
-
-
-
-
-
-
-
 
 
 
