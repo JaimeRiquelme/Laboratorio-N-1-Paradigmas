@@ -81,7 +81,10 @@
           system))))
 
 
-
+;add-user o Registro
+;Dominio: Usuario
+;recorrido: lista con usuarios
+;Descripcion: Funcion para registrar o añadir usuarios a un systema, para posteriormente registrarse con ellos.
 (define add-user
   (lambda (system)
     (lambda (name-user)
@@ -98,19 +101,25 @@
                        (fecha-actual)
                        (get-login system))))))
 
+;add-user o Registro
+;Dominio: Usuario
+;recorrido: lista con usuarios
+;Descripcion: Funcion para registrar o añadir usuarios a un systema, para posteriormente registrarse con ellos.
+
 
 (define login
   (lambda (system)
     (lambda (name-user)
       (if (member name-user (map car (get-usuarios system)))
-          (if (null? (get-usuarios system))
+          (if (not (get-login system))
+              (set-logeado (set-usuarios-system system (append (get-usuarios system) (list (make-user name-user)))) name-user)
               (begin
-                (set-usuarios-system (set-usuarios-system system (append (get-usuarios system) (list (make-user name-user)))))
-                (set-logeado (set-usuarios-system system name-user) #t)
-                (display "Usuario conectado\n"))
-              (display "Ya hay un usuario conectado\n"))
-          (display "Usuario no existe\n"))
-      (set-usuarios-system system (get-usuarios system)))))
+                (display "Ya hay un usuario conectado\n")
+                system))
+          (begin
+            (display "Usuario no existe\n")
+            system)))))
+
 
 
 
@@ -141,8 +150,6 @@
 (define S7 ((run S6 login) "user1"))
 (define S8 ((run S7 login) "user2"))
 
-
-S0
 S1
 S2
 S3
@@ -151,6 +158,7 @@ S5
 S6
 S7
 S8
+
 
 
 
