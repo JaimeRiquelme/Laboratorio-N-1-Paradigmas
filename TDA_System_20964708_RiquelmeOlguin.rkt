@@ -120,10 +120,18 @@
             (display "Usuario no existe\n")
             system)))))
 
+;Logout
+;Dominio: system
+;recorrido: system sin ningun usuario logeado
+;Descripcion: Funcion para "cerrar secion" o salir de un usuario que está en un sistema.
 
+(define logout
+  (lambda (system)
+    (if (not (get-login system))
+        system
+        (set-logeado system '()))))
 
-
-
+;------------------------------------------Sistema-de-prueba----------------------------------------------------------------------;
 ;creando un sistema
 (define S0 (system "newSystem"))
 
@@ -141,14 +149,12 @@
 (define S7 ((run S6 login) "user1"))
 (define S8 ((run S7 login) "user2"))
 
-S1
-S2
-S3
-S4
-S5
-S6
-S7
-S8
+;cerrando sesión user1 e iniciando con user2
+(define S9 (run S8 logout))
+(define S10 ((run S9 login) "user2"))
+
+(car (car (get-drive S2)))
+
 
 
 
