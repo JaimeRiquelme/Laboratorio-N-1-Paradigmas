@@ -11,7 +11,7 @@
   (list nombre drive usuarios ruta fecha-actual logeado current-drive))
 
 (define (system nombre)
-  (make-system nombre '() '() "/ruta/default" (fecha-actual) '() null ))
+  (make-system nombre '() '() "" (fecha-actual) '() null ))
 
 (define get-nombre (lambda (system) (car system)))
 
@@ -65,6 +65,13 @@
   (lambda(drive system)
     (member drive (map car(get-drive system)))))
 
+(define make-currentdrive
+  (lambda (drive)
+           (list drive)))
+
+(define currentdrive
+  (lambda (drive)(make-currentdrive drive)))
+
 
 
 ;RUN
@@ -104,7 +111,7 @@
     (lambda (name-user)
       (if (member name-user (map car (get-usuarios system)))
           (begin
-            (display "Usuario ya existe: ")
+            (display "Usuario ya existe: ");eliminar displayyyy
             (display name-user)
             (display "\n")
             system)
@@ -129,10 +136,10 @@
           (if (null? (get-logeado system))
               (set-logeado system name-user)
               (begin
-                (display "Ya hay un usuario conectado\n")
+                (display "Ya hay un usuario conectado\n");eliminar displayyyy
                 system))
           (begin
-            (display "Usuario no existe\n")
+            (display "Usuario no existe\n");eliminar display
             system)))))
 
 ;Logout
@@ -146,7 +153,10 @@
         system
         (set-logeado system '()))))
 
-
+;Switch Drive
+;Dominio: system
+;recorrido: system sin ningun usuario logeado
+;Descripcion: Funcion para "cerrar secion" o salir de un usuario que está en un sistema.
 
 (define switch-drive
   (lambda (system)
@@ -159,7 +169,9 @@
                            (get-ruta system)
                            (get-fecha system)
                            (get-logeado system)
-                           (cons(current-drive drive)(get-current-drive system)))
+                            (currentdrive drive))
+              
+              
               (make-system (get-nombre system)
                            (get-drive system)
                            (get-usuarios system)
@@ -167,6 +179,7 @@
                            (get-fecha system)
                            (get-logeado system)
                            (get-current-drive system)))
+          
               (make-system (get-nombre system)
                            (get-drive system)
                            (get-usuarios system)
@@ -205,7 +218,7 @@
 (define S10 ((run S9 login) "user2"))
 
 ;cambios de unidad, incluyendo unidad inexistente K
-(define S11 ((run S10 switch-drive) #\K))
+(define S11 ((run S10 switch-drive) #\D))
 (define S12 ((run S11 switch-drive) #\C))
 
 
@@ -242,9 +255,11 @@ S11
 S12
 
 
-(car(car (get-drive S5)))
+(string(car(car (get-drive S5))))
 
 ;como llamar al nombre de la unidad.
+
+
 
 
 
