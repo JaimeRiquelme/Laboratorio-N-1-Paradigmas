@@ -3,4 +3,12 @@
 
 (define make-user (lambda (name)(list name)))
 
+(define get-user
+  (lambda (user)
+    (car user)))
+
+
+
+
+
 

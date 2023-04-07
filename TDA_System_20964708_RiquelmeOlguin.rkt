@@ -60,17 +60,12 @@
                (string-append (number->string (date-hour fecha))
                        ":"
                 (number->string (date-minute fecha)))))
-
 (define drive?
   (lambda(drive system)
-    (member drive (map car(get-drive system)))))
+    (member drive (map car(get-drive system))))) ;cambiar nombre funcion ya que no es pertenencia
 
-(define make-currentdrive
-  (lambda (drive)
-           (list drive)))
 
-(define currentdrive
-  (lambda (drive)(make-currentdrive drive)))
+
 
 
 
@@ -93,13 +88,18 @@
     (lambda (letra nombre capacidad)
       (if (not (member letra (map car (get-drive system))))
           (make-system (get-nombre system)
-                       (cons (make-drive letra nombre capacidad) (get-drive system))
+                       (cons (drive letra nombre capacidad) (get-drive system))
                        (get-usuarios system)
-                       (get-ruta system)
+                       (if (null? (get-drive system))
+                           (string-append (string letra)":/" (get-ruta system))
+                           (get-ruta system))
                        (get-fecha system)
                        (get-logeado system)
-                       (get-current-drive system)) ; Agregar el usuario logeado actualmente en el sistema
+                       (if(null? (get-current-drive system))
+                          (list letra)
+                          (get-current-drive system)))
           system))))
+
 
 
 ;add-user o Registro
@@ -110,11 +110,7 @@
   (lambda (system)
     (lambda (name-user)
       (if (member name-user (map car (get-usuarios system)))
-          (begin
-            (display "Usuario ya existe: ");eliminar displayyyy
-            (display name-user)
-            (display "\n")
-            system)
+          system
           (make-system (get-nombre system)
                        (get-drive system)
                        (append (get-usuarios system) (list (make-user name-user)))
@@ -122,6 +118,8 @@
                        (fecha-actual)
                        (get-logeado system)
                        (get-current-drive system))))))
+
+
 
 ;add-user o Registro
 ;Dominio: Usuario
@@ -135,12 +133,9 @@
       (if (member name-user (map car (get-usuarios system)))
           (if (null? (get-logeado system))
               (set-logeado system name-user)
-              (begin
-                (display "Ya hay un usuario conectado\n");eliminar displayyyy
-                system))
-          (begin
-            (display "Usuario no existe\n");eliminar display
-            system)))))
+              system)
+          system))))
+
 
 ;Logout
 ;Dominio: system
@@ -218,9 +213,8 @@
 (define S10 ((run S9 login) "user2"))
 
 ;cambios de unidad, incluyendo unidad inexistente K
-(define S11 ((run S10 switch-drive) #\D))
-(define S12 ((run S11 switch-drive) #\C))
-
+(define S11 ((run S10 switch-drive) #\K))
+(define S12 ((run S11 switch-drive) #\D))
 
 
 
