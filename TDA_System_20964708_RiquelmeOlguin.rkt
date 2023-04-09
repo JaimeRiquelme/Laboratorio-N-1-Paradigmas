@@ -3,6 +3,8 @@
 
 (require "TDA_Drive_20964708_RiquelmeOlguin.rkt")
 (require "TDA_User_20964708_RiquelmeOlguin.rkt")
+(require "TDA_Folder_20964708_RiquelmeOlguin.rkt")
+
 (provide (all-defined-out))
 
 
@@ -10,44 +12,46 @@
 (define (make-system nombre drive usuarios ruta fecha-actual logeado current-drive)
   (list nombre drive usuarios ruta fecha-actual logeado current-drive))
 
+
+
 (define (system nombre)
   (make-system nombre '() '() "" (fecha-actual) '() null ))
 
-(define get-nombre (lambda (system) (car system)))
+(define get-nombre-system (lambda (system) (car system)))
 
-(define get-drive (lambda (system) (cadr system)))
+(define get-drive-system (lambda (system) (cadr system)))
 
-(define get-usuarios (lambda (system) (caddr system)))
+(define get-usuarios-system (lambda (system) (caddr system)))
 
-(define get-ruta (lambda(system)(cadddr(reverse system))))
+(define get-ruta-system (lambda(system)(cadddr(reverse system))))
 
-(define get-fecha (lambda (system) (caddr (reverse system))))
+(define get-fecha-system (lambda (system) (caddr (reverse system))))
 
-(define get-logeado (lambda(system)(cadr(reverse system))))
+(define get-logeado-system (lambda(system)(cadr(reverse system))))
 
-(define get-current-drive (lambda (system)(car(reverse system))))
+(define get-current-drive-system (lambda (system)(car(reverse system))))
 
-(define set-nombre-system (lambda (system-nombre nombre)(make-system nombre (get-drive system-nombre) (get-usuarios system-nombre)
-                 (get-ruta system-nombre) (get-fecha system-nombre) (get-logeado system-nombre)(get-current-drive system))))
+(define set-nombre-system (lambda (system-nombre nombre)(make-system nombre (get-drive-system system-nombre) (get-usuarios-system system-nombre)
+                 (get-ruta-system system-nombre) (get-fecha-system system-nombre) (get-logeado-system system-nombre)(get-current-drive-system system))))
 
-(define set-drive-system(lambda (system drive)(make-system (get-nombre system) drive (get-usuarios system) (get-ruta system)
-                 (get-fecha system) (get-logeado system)(get-current-drive system))))
+(define set-drive-system(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (get-ruta-system system)
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
 
-(define set-usuarios-system(lambda (system usuarios)(make-system (get-nombre system) (get-drive system) usuarios (get-ruta system)
-                 (get-fecha system) (get-logeado system)(get-current-drive system))))
+(define set-usuarios-system(lambda (system usuarios)(make-system (get-nombre-system system) (get-drive-system system) usuarios (get-ruta-system system)
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
 
-(define set-ruta-system(lambda (system ruta)(make-system (get-nombre system) (get-drive system) (get-usuarios system) ruta
-                 (get-fecha system) (get-logeado system)(get-current-drive system))))
+(define set-ruta-system(lambda (system ruta)(make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) ruta
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
 
-(define set-fecha-system(lambda (system fecha)(make-system (get-nombre system) (get-drive system) (get-usuarios system) (get-ruta system)
-                 fecha (get-logeado system)(get-current-drive system))))
+(define set-fecha-system(lambda (system fecha)(make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) (get-ruta-system system)
+                 fecha (get-logeado-system system)(get-current-drive-system system))))
 
-(define set-logeado(lambda (system user)(make-system (get-nombre system)(get-drive system)(get-usuarios system)(get-ruta system)
-                 (get-fecha system)user(get-current-drive system))))
+(define set-logeado(lambda (system user)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)(get-ruta-system system)
+                 (get-fecha-system system)user(get-current-drive-system system))))
                  
 
-(define set-current-drive(lambda (system current-drive)(make-system (get-nombre system)(get-drive system)(get-usuarios system)(get-ruta system)
-                 (get-fecha system)(get-logeado system) current-drive)))
+(define set-current-drive(lambda (system current-drive)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)(get-ruta-system system)
+                 (get-fecha-system system)(get-logeado-system system) current-drive)))
 
 
 
@@ -62,9 +66,15 @@
                 (number->string (date-minute fecha)))))
 (define drive?
   (lambda(drive system)
-    (member drive (map car(get-drive system))))) ;cambiar nombre funcion ya que no es pertenencia
+    (member drive (map car(get-drive-system system))))) ;cambiar nombre funcion ya que no es pertenencia
 
 
+(define make-ruta
+  (lambda (ruta)(list ruta)))
+
+(define Ruta
+  (lambda(system)
+    ((string-append (string(car (get-current-drive-system system)))":/" (get-ruta-system system)))))
 
 
 
@@ -86,18 +96,18 @@
 (define add-drive
   (lambda (system)
     (lambda (letra nombre capacidad)
-      (if (not (member letra (map car (get-drive system))))
-          (make-system (get-nombre system)
-                       (cons (drive letra nombre capacidad) (get-drive system))
-                       (get-usuarios system)
-                       (if (null? (get-drive system))
-                           (string-append (string letra)":/" (get-ruta system))
-                           (get-ruta system))
-                       (get-fecha system)
-                       (get-logeado system)
-                       (if(null? (get-current-drive system))
+      (if (not (member letra (map car (get-drive-system system))))
+          (make-system (get-nombre-system system)
+                       (cons (drive letra nombre capacidad) (get-drive-system system))
+                       (get-usuarios-system system)
+                       (if (null? (get-drive-system system))
+                           (string-append (string letra)":/" (get-ruta-system system))
+                           (get-ruta-system system))
+                       (get-fecha-system system)
+                       (get-logeado-system system)
+                       (if(null? (get-current-drive-system system))
                           (list letra)
-                          (get-current-drive system)))
+                          (get-current-drive-system system)))
           system))))
 
 
@@ -109,15 +119,17 @@
 (define add-user
   (lambda (system)
     (lambda (name-user)
-      (if (member name-user (map car (get-usuarios system)))
+      (if (member name-user (map car (get-usuarios-system system)))
           system
-          (make-system (get-nombre system)
-                       (get-drive system)
-                       (append (get-usuarios system) (list (make-user name-user)))
-                       (get-ruta system)
+          (make-system (get-nombre-system system)
+                       (get-drive-system system)
+                       (append (get-usuarios-system system) (list (make-user name-user)))
+                       (get-ruta-system system)
                        (fecha-actual)
-                       (get-logeado system)
-                       (get-current-drive system))))))
+                       (get-logeado-system system)
+                       (get-current-drive-system system))))))
+
+
 
 
 
@@ -130,8 +142,8 @@
 (define login
   (lambda (system)
     (lambda (name-user)
-      (if (member name-user (map car (get-usuarios system)))
-          (if (null? (get-logeado system))
+      (if (member name-user (map car (get-usuarios-system system)))
+          (if (null? (get-logeado-system system))
               (set-logeado system name-user)
               system)
           system))))
@@ -144,7 +156,7 @@
 
 (define logout
   (lambda (system)
-    (if (not (get-logeado system))
+    (if (not (get-logeado-system system))
         system
         (set-logeado system '()))))
 
@@ -157,69 +169,59 @@
   (lambda (system)
     (lambda (drive)
       (if (drive? drive system)
-          (if (not(null? (get-logeado system)))
-              (make-system (get-nombre system)
-                           (get-drive system)
-                           (get-usuarios system)
-                           (get-ruta system)
-                           (get-fecha system)
-                           (get-logeado system)
-                            (currentdrive drive))
+          (if (not (null? (get-logeado-system system)))
+              (make-system (get-nombre-system system)
+                           (get-drive-system system)
+                           (get-usuarios-system system)
+                           (get-ruta-system system)
+                           (get-fecha-system system)
+                           (get-logeado-system system)
+                           (currentdrive drive))
               
-              
-              (make-system (get-nombre system)
-                           (get-drive system)
-                           (get-usuarios system)
-                           (get-ruta system)
-                           (get-fecha system)
-                           (get-logeado system)
-                           (get-current-drive system)))
+              (make-system (get-nombre-system system)
+                           (get-drive-system system)
+                           (get-usuarios-system system)
+                           (get-ruta-system system)
+                           (get-fecha-system system)
+                           (get-logeado-system system)
+                           (get-current-drive-system system)))
           
-              (make-system (get-nombre system)
-                           (get-drive system)
-                           (get-usuarios system)
-                           (get-ruta system)
-                           (get-fecha system)
-                           (get-logeado system)
-                           (get-current-drive system))))))
+              (make-system (get-nombre-system system)
+                           (get-drive-system system)
+                           (get-usuarios-system system)
+                           (get-ruta-system system)
+                           (get-fecha-system system)
+                           (get-logeado-system system)
+                           (get-current-drive-system system))))))
 
+;md (make directory)
+;Dominio: system X name(string)
+;recorrido: system con directorios creados dentro de drive
+;Descripcion: Funcion que actualiza contenido de drive, creando nuevos directorios y guardandolos dentro de contenido.
 
+(define md
+  (lambda (system)
+    (lambda(nombre)
+      (set-drive-system system (SyMDrive system (string (car (get-current-drive-system system)))
+                                         nombre)))))
 
-
-
-
-
-
-;------------------------------------------Sistema-de-prueba----------------------------------------------------------------------;
-;creando un sistema
-(define S0 (system "newSystem"))
-
-;añadiendo unidades. Incluye caso S2 que intenta añadir unidad con una letra que ya existe
-(define S1 ((run S0 add-drive) #\C "SO" 1000))
-(define S2 ((run S1 add-drive) #\C "SO1" 3000))
-(define S3 ((run S2 add-drive) #\D "Util" 2000))
-
-;añadiendo usuarios. Incluye caso S6 que intenta registrar usuario duplicado
-(define S4 ((run S3 add-user) "user1"))
-(define S5 ((run S4 add-user) "user1"))
-(define S6 ((run S5 add-user) "user2"))
-
-;iniciando sesión con usuarios. Incluye caso S8 que intenta iniciar sesión con user2 sin antes haber salido con user1
-(define S7 ((run S6 login) "user1"))
-(define S8 ((run S7 login) "user2"))
-
-;cerrando sesión user1 e iniciando con user2
-(define S9 (run S8 logout))
-(define S10 ((run S9 login) "user2"))
-
-;cambios de unidad, incluyendo unidad inexistente K
-(define S11 ((run S10 switch-drive) #\K))
-(define S12 ((run S11 switch-drive) #\D))
-
-
-
-
-
+;folder (otras funciones)
+;Dominio: system X name(string)
+;recorrido: folder
+;Descripcion: Funcion que crea nuevos directorios
+(define folder
+  (lambda (system nombre)
+      (let ((fecha (fecha-actual)))
+        (make-folder nombre
+                     null
+                     fecha
+                     fecha
+                     (get-logeado-system system)
+                     null
+                     null
+                     null
+                     null
+                     (get-ruta-system system)))))
 
 
 
@@ -229,29 +231,67 @@
 
 
 
+;SyMDrive (otras funciones)
+;Dominio: system X Letra drive X name(string)
+;recorrido: lista con drives actualizados con nuevo contenido
+;Descripcion: Funcion que crea nuevos directorios
+
+(define SyMDrive
+  (lambda (system letra nombre)
+    (define buscador
+      (lambda (drives lista)
+        (if (null? drives)
+            lista
+            (if (equal? (string (get-letra-drive (car drives))) letra)
+                (if (member nombre (map car(cadddr (car drives))))
+                    (buscador (cdr drives) (append lista (list (car drives))))
+                    (let ((new-drive (set-contenido-drive (folder system nombre) (car drives))))
+                      (buscador (cdr drives) (append lista (list new-drive)))))
+                (buscador (cdr drives) (append lista (list (car drives))))))))
+    (buscador (cadr system) '())))
 
 
 
 
 
-S0
-S1
-S2
-S3
-S4
-S5
-S6
-S7
-S8
-S9
-S10
-S11
-S12
+
+;cd (change directory) 
+;Dominio: system X Letra drive X name(string)
+;recorrido: lista con drives actualizados con nuevo contenido
+;Descripcion: Funcion que crea nuevos directorios
+
+(define cd
+  (lambda (system)
+    (lambda (nuevaruta)
+      (if(not(null? (get-ruta-system system)))
+         (set-ruta-system system (string-append (get-ruta-system system) nuevaruta "/"))
+         system))))
 
 
-(string(car(car (get-drive S5))))
 
-;como llamar al nombre de la unidad.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
