@@ -64,9 +64,9 @@
                (string-append (number->string (date-hour fecha))
                        ":"
                 (number->string (date-minute fecha)))))
-(define drive?
+(define drive-Lista?
   (lambda(drive system)
-    (member drive (map car(get-drive-system system))))) ;cambiar nombre funcion ya que no es pertenencia
+    (member drive (map car(get-drive-system system))))) 
 
 
 (define make-ruta
@@ -75,6 +75,10 @@
 (define Ruta
   (lambda(system)
     ((string-append (string(car (get-current-drive-system system)))":/" (get-ruta-system system)))))
+
+(define set-logeado-path(lambda (system user)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)
+                  (string-append (string(car (get-current-drive-system system)))":/")
+                 (get-fecha-system system)user(get-current-drive-system system))))
 
 
 
@@ -133,10 +137,10 @@
 
 
 
-;add-user o Registro
-;Dominio: Usuario
-;recorrido: lista con usuarios
-;Descripcion: Funcion para registrar o añadir usuarios a un systema, para posteriormente registrarse con ellos.
+;login
+;Dominio: System X string
+;recorrido: System con el usuario logeado
+;Descripcion: Funcion para logear un usuario dentro del sistema
 
 
 (define login
@@ -158,7 +162,7 @@
   (lambda (system)
     (if (not (get-logeado-system system))
         system
-        (set-logeado system '()))))
+        (set-logeado-path system '()))))
 
 ;Switch Drive
 ;Dominio: system
@@ -168,12 +172,12 @@
 (define switch-drive
   (lambda (system)
     (lambda (drive)
-      (if (drive? drive system)
+      (if (drive-Lista? drive system)
           (if (not (null? (get-logeado-system system)))
               (make-system (get-nombre-system system)
                            (get-drive-system system)
                            (get-usuarios-system system)
-                           (get-ruta-system system)
+                           (string-append (string drive)":/")
                            (get-fecha-system system)
                            (get-logeado-system system)
                            (currentdrive drive))
@@ -266,6 +270,7 @@
       (if(not(null? (get-ruta-system system)))
          (set-ruta-system system (string-append (get-ruta-system system) nuevaruta "/"))
          system))))
+
 
 
 

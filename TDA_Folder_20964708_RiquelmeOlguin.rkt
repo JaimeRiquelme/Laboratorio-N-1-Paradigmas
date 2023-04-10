@@ -17,13 +17,6 @@
 
 
 
-
-
-
-
-
-
-
 ;selectores
 
 (define get-nombre-folder(lambda (folder)(car folder)))
@@ -45,6 +38,10 @@
 (define get-contenido-folder(lambda (folder)(cadddr (cddddr folder))))
 
 (define get-ubicacion-folder(lambda (folder)(cddddr (cddddr folder))))
+
+;modificadores
+
+
 
 
 
