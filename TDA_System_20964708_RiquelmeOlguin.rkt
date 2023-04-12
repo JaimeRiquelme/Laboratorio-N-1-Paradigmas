@@ -1,5 +1,6 @@
 #lang racket/base
 (require racket/date)
+(require racket/string)
 
 (require "TDA_Drive_20964708_RiquelmeOlguin.rkt")
 (require "TDA_User_20964708_RiquelmeOlguin.rkt")
@@ -55,30 +56,6 @@
 
 
 
-;-----------------OTRAS-FUNCIONES-------------------;
-
-(define (fecha-actual)(define fecha (current-date))
-        (list (date-day fecha)
-               (date-month fecha)
-               (date-year fecha)
-               (string-append (number->string (date-hour fecha))
-                       ":"
-                (number->string (date-minute fecha)))))
-(define drive-Lista?
-  (lambda(drive system)
-    (member drive (map car(get-drive-system system))))) 
-
-
-(define make-ruta
-  (lambda (ruta)(list ruta)))
-
-(define Ruta
-  (lambda(system)
-    ((string-append (string(car (get-current-drive-system system)))":/" (get-ruta-system system)))))
-
-(define set-logeado-path(lambda (system user)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)
-                  (string-append (string(car (get-current-drive-system system)))":/")
-                 (get-fecha-system system)user(get-current-drive-system system))))
 
 
 
@@ -261,21 +238,106 @@
 
 ;cd (change directory) 
 ;Dominio: system X Letra drive X name(string)
-;recorrido: lista con drives actualizados con nuevo contenido
+;recorrido: system
 ;Descripcion: Funcion que crea nuevos directorios
-
 (define cd
   (lambda (system)
     (lambda (nuevaruta)
-      (if(not(null? (get-ruta-system system)))
-         (set-ruta-system system (string-append (get-ruta-system system) nuevaruta "/"))
-         system))))
+      (if (not (null? (get-ruta-system system)))
+          (if(equal? "/" nuevaruta)
+             (set-ruta-system system (string-append (string (car(get-current-drive-system system))) ":/" ))
+             (if(equal? ".." nuevaruta)
+                (set-ruta-system system (cdpunto (get-ruta-system system)))
+                (if (SyMDrive2 system (string (car (get-current-drive-system system))) nuevaruta)
+                 (set-ruta-system system (string-append (get-ruta-system system) nuevaruta "/"))               
+                  system)))          
+          system))))
+
+
+;format
+;Dominio: system X Letra drive X name(string)
+;recorrido: system
+;Descripcion: Funcion que permite formatear una unidad.
+
+(define format
+  (lambda (system)
+    (lambda (letra nombre)
+      (make-system (get-nombre-system system) (buscarformat system letra nombre) (get-usuarios-system system) (string-append (string letra)":/")
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)))))
 
 
 
 
+;-----------------OTRAS-FUNCIONES-------------------;
+
+(define (fecha-actual)(define fecha (current-date))
+        (list (date-day fecha)
+               (date-month fecha)
+               (date-year fecha)
+               (string-append (number->string (date-hour fecha))
+                       ":"
+                (number->string (date-minute fecha)))))
+(define drive-Lista?
+  (lambda(drive system)
+    (member drive (map car(get-drive-system system))))) 
 
 
+(define make-ruta
+  (lambda (ruta)(list ruta)))
+
+(define Ruta
+  (lambda(system)
+    ((string-append (string(car (get-current-drive-system system)))":/" (get-ruta-system system)))))
+
+(define set-logeado-path(lambda (system user)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)
+                  (string-append (string(car (get-current-drive-system system)))":/")
+                 (get-fecha-system system)user(get-current-drive-system system))))
+
+
+(define SyMDrive2
+  (lambda (system letra nombre)
+    (define buscador
+      (lambda (drives lista)
+        (if (null? drives)
+            #f
+            (if (equal? (string (get-letra-drive (car drives))) letra)
+                (buscarfolder (cadddr(car drives)) nombre)                
+                (buscador (cdr drives) (append lista (list (car drives))))))))
+    (buscador (cadr system) '())))
+
+
+(define buscarfolder
+  (lambda (folders nombre )
+    (if (null? folders)
+        #f
+        (let ((folder (car folders)))
+          (if (equal? (get-nombre-folder folder) nombre)
+              #t
+              (buscarfolder (cdr folders) nombre))))))
+
+(define cdpunto
+  (lambda (string)
+    (string-append(string-join (reverse(cdr(reverse(string-split string "/")))) "/")"/")))
+
+(define stringprueba "C:/folder1/folder2")
+
+
+
+(define buscarformat
+  (lambda (system letra nombre)
+    (define buscador
+      (lambda (drives lista)
+        (if (null? drives)
+            lista
+            (if (equal? (string (get-letra-drive (car drives))) (string letra))
+                (append lista
+                        (make-drive (get-letra-drive (car drives))
+                                    nombre
+                                    (get-capacidad-drive (car drives))
+                                    '())
+                        (cdr drives))
+                (buscador (cdr drives) (append lista (car drives)))))))
+    (buscador (cadr system) '())))
 
 
 

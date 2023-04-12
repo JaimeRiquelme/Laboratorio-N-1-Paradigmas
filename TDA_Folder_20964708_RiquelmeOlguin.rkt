@@ -41,6 +41,137 @@
 
 ;modificadores
 
+(define set-nombre-folder 
+  (lambda (folder nombre)
+    (make-folder nombre
+                 (get-contenido-folder folder)
+                 (get-fecha-creacion-folder folder)
+                 (get-fecha-modif-folder folder)
+                 (get-creador-user-folder folder)
+                 (get-compartidos-user-folder folder)
+                 (get-tamano-folder folder)
+                 (get-cantidad-archivos-folder folder)
+                 (get-seguridad-folder folder)
+                 (get-ubicacion-folder folder))))
+
+(define set-contenido-folder 
+  (lambda (folder contenido)
+    (make-folder (get-nombre-folder folder)
+                 contenido
+                 (get-fecha-creacion-folder folder)
+                 (get-fecha-modif-folder folder)
+                 (get-creador-user-folder folder)
+                 (get-compartidos-user-folder folder)
+                 (get-tamano-folder folder)
+                 (get-cantidad-archivos-folder folder)
+                 (get-seguridad-folder folder)
+                 (get-ubicacion-folder folder))))
+
+(define set-fecha-creacion-folder 
+  (lambda (folder fecha)
+    (make-folder (get-nombre-folder folder)
+                 (get-contenido-folder folder)
+                 fecha
+                 (get-fecha-modif-folder folder)
+                 (get-creador-user-folder folder)
+                 (get-compartidos-user-folder folder)
+                 (get-tamano-folder folder)
+                 (get-cantidad-archivos-folder folder)
+                 (get-seguridad-folder folder)
+                 (get-ubicacion-folder folder))))
+
+(define set-fecha-modif-folder 
+  (lambda (folder fecha)
+    (make-folder (get-nombre-folder folder)
+                 (get-contenido-folder folder)
+                 (get-fecha-creacion-folder folder)
+                 fecha
+                 (get-creador-user-folder folder)
+                 (get-compartidos-user-folder folder)
+                 (get-tamano-folder folder)
+                 (get-cantidad-archivos-folder folder)
+                 (get-seguridad-folder folder)
+                 (get-ubicacion-folder folder))))
+
+(define set-creador-user-folder 
+  (lambda (folder user)
+    (make-folder (get-nombre-folder folder)
+                 (get-contenido-folder folder)
+                 (get-fecha-creacion-folder folder)
+                 (get-fecha-modif-folder folder)
+                 user
+                 (get-compartidos-user-folder folder)
+                 (get-tamano-folder folder)
+                 (get-cantidad-archivos-folder folder)
+                 (get-seguridad-folder folder)
+                 (get-ubicacion-folder folder))))
+
+(define set-compartidos-user-folder 
+  (lambda (folder users)
+    (make-folder (get-nombre-folder folder)
+                 (get-contenido-folder folder)
+                 (get-fecha-creacion-folder folder)
+                 (get-fecha-modif-folder folder)
+                 (get-creador-user-folder folder)
+                 users
+                 (get-tamano-folder folder)
+                 (get-cantidad-archivos-folder folder)
+                 (get-seguridad-folder folder)
+                 (get-ubicacion-folder folder))))
+
+(define set-tamano-folder 
+  (lambda (folder tamano)
+    (make-folder (get-nombre-folder folder)
+                 (get-contenido-folder folder)
+                 (get-fecha-creacion-folder folder)
+                 (get-fecha-modif-folder folder)
+                 (get-creador-user-folder folder)
+                 (get-compartidos-user-folder folder)
+                 tamano
+                 (get-cantidad-archivos-folder folder)
+                 (get-seguridad-folder folder)
+                 (get-ubicacion-folder folder))))
+
+(define set-cantidad-archivos-folder 
+  (lambda (folder cantidad)
+    (make-folder (get-nombre-folder folder)
+                 (get-contenido-folder folder)
+                 (get-fecha-creacion-folder folder)
+                 (get-fecha-modif-folder folder)
+                 (get-creador-user-folder folder)
+                 (get-compartidos-user-folder folder)
+                 (get-tamano-folder folder)
+                 cantidad
+                 (get-seguridad-folder folder)
+                 (get-ubicacion-folder folder))))
+
+(define set-seguridad-folder 
+  (lambda (folder seguridad)
+    (make-folder (get-nombre-folder folder)
+                 (get-contenido-folder folder)
+                 (get-fecha-creacion-folder folder)
+                 (get-fecha-modif-folder folder)
+                 (get-creador-user-folder folder)
+                 (get-compartidos-user-folder folder)
+                 (get-tamano-folder folder)
+                 (get-cantidad-archivos-folder folder)
+                 seguridad
+                 (get-ubicacion-folder folder))))
+
+(define set-ubicacion-folder 
+  (lambda (folder ubicacion)
+    (make-folder (get-nombre-folder folder)
+                 (get-contenido-folder folder)
+                 (get-fecha-creacion-folder folder)
+                 (get-fecha-modif-folder folder)
+                 (get-creador-user-folder folder)
+                 (get-compartidos-user-folder folder)
+                 (get-tamano-folder folder)
+                 (get-cantidad-archivos-folder folder)
+                 (get-seguridad-folder folder)
+                 ubicacion)))
+
+
 
 
 
