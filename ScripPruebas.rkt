@@ -1,4 +1,5 @@
 #lang racket/base
+(require racket/string)
 (require "TDA_System_20964708_RiquelmeOlguin.rkt")
 (require "TDA_Folder_20964708_RiquelmeOlguin.rkt")
 (require "TDA_Drive_20964708_RiquelmeOlguin.rkt")
@@ -63,15 +64,19 @@
 (define S28 ((run S27 md) "folder5"))
 (define S29 ((run S28 cd) "folder5"))
 
-(define S30 ((run S29 format) #\D "newD"))
+;se cambia de carpeta en base a la ruta especificada
+(define S30 ((run S29 cd) "C:/folder1/"))
 
 
-S25
-S26
-S27
+
+
+S22
 S28
 S29
 S30
+
+
+
 
 
 

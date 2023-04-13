@@ -240,19 +240,21 @@
 ;Dominio: system X Letra drive X name(string)
 ;recorrido: system
 ;Descripcion: Funcion que crea nuevos directorios
+
 (define cd
   (lambda (system)
     (lambda (nuevaruta)
       (if (not (null? (get-ruta-system system)))
-          (if(equal? "/" nuevaruta)
-             (set-ruta-system system (string-append (string (car(get-current-drive-system system))) ":/" ))
-             (if(equal? ".." nuevaruta)
-                (set-ruta-system system (cdpunto (get-ruta-system system)))
-                (if (SyMDrive2 system (string (car (get-current-drive-system system))) nuevaruta)
-                 (set-ruta-system system (string-append (get-ruta-system system) nuevaruta "/"))               
-                  system)))          
+             (if(equal? "/" nuevaruta)
+                (set-ruta-system system (string-append (string (car(get-current-drive-system system))) ":/" ))
+                (if(equal? ".." nuevaruta)
+                   (set-ruta-system system (cdpunto (get-ruta-system system)))
+                   (if(ispath? system nuevaruta)
+                      (set-ruta-system system nuevaruta)
+                      (if (SyMDrive2 system (string (car (get-current-drive-system system))) nuevaruta)
+                          (set-ruta-system system (string-append (get-ruta-system system) nuevaruta "/"))               
+                       system))))          
           system))))
-
 
 ;format
 ;Dominio: system X Letra drive X name(string)
@@ -264,6 +266,14 @@
     (lambda (letra nombre)
       (make-system (get-nombre-system system) (buscarformat system letra nombre) (get-usuarios-system system) (string-append (string letra)":/")
                  (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)))))
+
+
+(define ispath?
+  (lambda (system path)
+      (if (member (car (string-split path ":")) (map string (map car (get-drive-system system))))
+          #t
+          #f)))
+
 
 
 
