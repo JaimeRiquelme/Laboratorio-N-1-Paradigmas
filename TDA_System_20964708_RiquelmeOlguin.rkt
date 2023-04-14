@@ -233,6 +233,37 @@
 
 
 
+(define add-file
+  (lambda (system)
+    (lambda (file)
+      (SyMFolder system file (cadr(get-drive-system system))))))
+
+
+
+(define SyMDrive3
+  (lambda (system file)
+    (define buscador
+      (lambda (drives lista)
+        (if (null? drives)
+            lista
+            (if (equal? (string (get-letra-drive (car drives))) (carpetactual system))
+                (buscador (cdr drives) (append lista (list (set-contenido-drive (SyMFolder file (car drives))(car drives)))))
+                (buscador (cdr drives) (append lista (list (car drives))))))))
+    (buscador (cadr system) '())))
+;me devuelte la lista de folders actualizada.
+
+(define SyMFolder
+  (lambda(system file drive)
+    (define buscar
+      (lambda(folders lista)
+        (if(null? folders)
+           lista
+           (if(equal? (get-nombre-folder(car folders))(carpetactual system))
+                 (buscar (cdr folders)(append lista(list(set-contenido-folder (car folders) file))))
+                 (buscar (cdr folders)(append lista(list(car folders))))))))
+    (buscar (get-contenido-drive drive) '())))
+
+
 
 
 
@@ -249,8 +280,9 @@
                 (set-ruta-system system (string-append (string (car(get-current-drive-system system))) ":/" ))
                 (if(equal? ".." nuevaruta)
                    (set-ruta-system system (cdpunto (get-ruta-system system)))
-                   (if(ispath? system nuevaruta)
-                      (set-ruta-system system nuevaruta)
+                   (if(ispath? system nuevaruta);cambiar el set currentdrive
+                      (make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) nuevaruta
+                                   (get-fecha-system system) (get-logeado-system system)(string-ref (car (string-split nuevaruta ":"))))
                       (if (SyMDrive2 system (string (car (get-current-drive-system system))) nuevaruta)
                           (set-ruta-system system (string-append (get-ruta-system system) nuevaruta "/"))               
                        system))))          
@@ -268,17 +300,35 @@
                  (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)))))
 
 
+
+
+
+
+;-----------------OTRAS-FUNCIONES-------------------;
+;file
+;Dominio: system X nombre X extencion X contenido
+;recorrido: file
+;Descripcion: Funcion que permite crear un archivo(file).
+(define file
+  (lambda (nombre extencion contenido . seguridad)
+      (let ((fecha (fecha-actual)))
+        (make-folder nombre
+                     extencion
+                     contenido
+                     fecha
+                     fecha
+                     null
+                     null
+                     null
+                     seguridad                   
+                     null))))
+
 (define ispath?
   (lambda (system path)
       (if (member (car (string-split path ":")) (map string (map car (get-drive-system system))))
           #t
           #f)))
 
-
-
-
-
-;-----------------OTRAS-FUNCIONES-------------------;
 
 (define (fecha-actual)(define fecha (current-date))
         (list (date-day fecha)
@@ -350,6 +400,15 @@
     (buscador (cadr system) '())))
 
 
+
+(define carpetactual
+  (lambda (system)
+    (let ((ruta (get-ruta-system system)))
+      (car (reverse (string-split (list->string (string->list ruta)) "/"))))))
+
+
+(define esactual?
+  (lambda(system nombre)(equal?(carpetactual system)nombre)))
 
 
 
