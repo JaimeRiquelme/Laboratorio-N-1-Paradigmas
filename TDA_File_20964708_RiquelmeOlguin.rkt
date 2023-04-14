@@ -3,17 +3,17 @@
 (require "TDA_Folder_20964708_RiquelmeOlguin.rkt")
 
 
-(define (make-file nombre contenido-file extencion fecha-creacion fecha-modificacion creador-user
-                   compartidos-user tamaño seguridad)
+(define (make-file nombre extencion contenido-file fecha-creacion fecha-modificacion creador-user
+                   compartidos-user tamaño seguridad ubicacion)
   (list nombre contenido-file extencion fecha-creacion fecha-modificacion creador-user
-                   compartidos-user tamaño seguridad))
+                   compartidos-user tamaño seguridad ubicacion))
 
 ;selectores
 (define get-nombre-file(lambda (file)(car file)))
 
-(define get-contenido-file(lambda(file)(cadr file)))
+(define get-contenido-file(lambda(file)(caddr file)))
 
-(define get-extension-file(lambda (file)(caddr file)))
+(define get-extension-file(lambda (file)(cadr file)))
 
 (define get-fecha-creacion-file(lambda (file)(cadddr file)))
 
@@ -27,6 +27,8 @@
 
 (define get-seguridad-file(lambda (file)(cadddr (cdr(cddddr file)))))
 
+(define get-ubicacion-file (lambda(file)(car(reverse file))))
+
  ;modificadores
 
 (define set-nombre-file 
@@ -39,7 +41,8 @@
                (get-creador-user-file file)
                (get-compartidos-user-file file)
                (get-tamaño-file file)
-               (get-seguridad-file file))))
+               (get-seguridad-file file)
+               (get-ubicacion-file file))))
 
 (define set-contenido-file 
   (lambda (file contenido)
@@ -51,7 +54,8 @@
                (get-creador-user-file file)
                (get-compartidos-user-file file)
                (get-tamaño-file file)
-               (get-seguridad-file file))))
+               (get-seguridad-file file)
+               (get-ubicacion-file file))))
 
 (define set-extension-file 
   (lambda (file extension)
@@ -63,7 +67,8 @@
                (get-creador-user-file file)
                (get-compartidos-user-file file)
                (get-tamaño-file file)
-               (get-seguridad-file file))))
+               (get-seguridad-file file)
+               (get-ubicacion-file file))))
 
 (define set-fecha-creacion-file 
   (lambda (file fecha)
@@ -75,7 +80,8 @@
                (get-creador-user-file file)
                (get-compartidos-user-file file)
                (get-tamaño-file file)
-               (get-seguridad-file file))))
+               (get-seguridad-file file)
+               (get-ubicacion-file file))))
 
 (define set-fecha-modificacion-file 
   (lambda (file fecha)
@@ -87,7 +93,8 @@
                (get-creador-user-file file)
                (get-compartidos-user-file file)
                (get-tamaño-file file)
-               (get-seguridad-file file))))
+               (get-seguridad-file file)
+               (get-ubicacion-file file))))
 
 (define set-creador-user-file 
   (lambda (file user)
@@ -99,7 +106,8 @@
                user
                (get-compartidos-user-file file)
                (get-tamaño-file file)
-               (get-seguridad-file file))))
+               (get-seguridad-file file)
+               (get-ubicacion-file file))))
 
 (define set-compartidos-user-file 
   (lambda (file users)
@@ -111,7 +119,8 @@
                (get-creador-user-file file)
                users
                (get-tamaño-file file)
-               (get-seguridad-file file))))
+               (get-seguridad-file file)
+               (get-ubicacion-file file))))
 
 (define set-tamaño-file 
   (lambda (file tamaño)
@@ -123,7 +132,8 @@
                (get-creador-user-file file)
                (get-compartidos-user-file file)
                tamaño
-               (get-seguridad-file file))))
+               (get-seguridad-file file)
+               (get-ubicacion-file file))))
 (define set-seguridad-file 
   (lambda (file seguridad)
     (make-file (get-nombre-file file)
@@ -134,4 +144,18 @@
                (get-creador-user-file file)
                (get-compartidos-user-file file)
                (get-tamaño-file file)
-               seguridad)))
+               seguridad
+               (get-ubicacion-file file))))
+
+(define set-ubicacion-file 
+  (lambda (file ubicacion)
+    (make-file (get-nombre-file file)
+               (get-contenido-file file)
+               (get-extension-file file)
+               (get-fecha-creacion-file file)
+               (get-fecha-modificacion-file file)
+               (get-creador-user-file file)
+               (get-compartidos-user-file file)
+               (get-tamaño-file file)
+               (get-seguridad-file file)
+               ubicacion)))

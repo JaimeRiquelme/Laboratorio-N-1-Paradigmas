@@ -67,13 +67,24 @@
 ;se cambia de carpeta en base a la ruta especificada
 (define S30 ((run S29 cd) "C:/folder1/"))
 
+;formateando drive D:
+(define S31 ((run S30 format) #\D "newD"))
+
+;añadiendo archivos
+(define S32 ((run S31 add-file) (file "foo1.txt" "txt" "hello world 1")))
+(define S33 ((run S32 add-file) (file "foo2.txt" "txt" "hello world 2")))
+(define S34 ((run S33 add-file) (file "foo3.docx" "docx" "hello world 3")))
+(define S35 ((run S34 add-file) (file "goo4.docx" "docx" "hello world 4" #\h #\r)))
+
+(define S36 ((run S35 switch-drive) #\D))
+
+(define pathp "C:/folder1/folder221/")
+(define resultado ((rdcarpeta S35 )"C:/folder1/folder221/"))
+(define resultado2 ((rdcarpeta S35 )"nombrescarpeta"))
+S36
 
 
 
-S22
-S28
-S29
-S30
 
 
 

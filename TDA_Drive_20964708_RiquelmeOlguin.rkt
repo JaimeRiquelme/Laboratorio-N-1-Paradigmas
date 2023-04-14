@@ -2,7 +2,11 @@
 (provide (all-defined-out))
 
 
-;DRIVE Contructor
+;Nombre de la función: make-drive
+;Dominio: letra X nombre X capacidad X contenido
+;Recorrido: drive
+;Descripción: Esta función toma como argumentos una letra, un nombre, una capacidad y un contenido y retorna una lista que representa un drive.
+; La letra representa la letra de la unidad, el nombre el nombre del drive, la capacidad la cantidad de espacio disponible y el contenido es una lista con el contenido del drive.
 
 (define make-drive
   (lambda (letra nombre capacidad contenido)
@@ -12,9 +16,19 @@
   (lambda (drive)
            (list drive)))
 
+;Nombre de la función: drive
+;Dominio: letra (string) X nombre (string) X capacidad (number)
+;Recorrido: drive
+;Descripción: Esta función toma una letra de unidad letra (string), un nombre de drive nombre (string) y una capacidad en bytes capacidad (number) como argumentos.
+; Devuelve un drive con la letra, el nombre y la capacidad especificados y sin contenido.
+
 (define (drive letra nombre capacidad)
   (make-drive letra nombre capacidad null))
 
+;Nombre de la función: currentdrive
+;Dominio: letra
+;Recorrido: letra
+;Descripción: Esta función toma una letra de unidad (letra) como argumento y crea una lista con esa letra. Esta lista representa la unidad actual del sistema.
 (define currentdrive
   (lambda (drive)(make-currentdrive drive)))
 
@@ -23,7 +37,8 @@
 (define get-letra-drive (lambda (drive)(car drive)))
 (define get-nombre-drive (lambda (drive)(cadr drive)))
 (define get-capacidad-drive (lambda (drive)(caddr drive)))
-(define get-contenido-drive (lambda (drive)(cadddr drive)))
+
+(define get-contenido-drive (lambda (drive)(car (reverse drive))))
 
 ;modificadores
 
@@ -40,6 +55,13 @@
                 (get-nombre-drive drive)
                 (get-capacidad-drive drive)
                 (cons contenido (get-contenido-drive drive)))))
+
+(define set-contenido-drive2
+  (lambda (contenido drive)
+    (make-drive (get-letra-drive drive)
+                (get-nombre-drive drive)
+                (get-capacidad-drive drive)
+                 contenido)))
 
 
 

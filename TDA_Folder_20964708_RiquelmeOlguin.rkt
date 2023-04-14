@@ -21,7 +21,9 @@
 
 (define get-nombre-folder(lambda (folder)(car folder)))
 
-(define get-fecha-creacion-folder(lambda (folder)(cadr folder)))
+(define get-contenido-folder(lambda (folder)(cadr folder)))
+
+(define get-fecha-creacion-folder(lambda (folder)(caddr folder)))
 
 (define get-fecha-modif-folder(lambda (folder)(caddr folder)))
 
@@ -34,8 +36,6 @@
 (define get-cantidad-archivos-folder(lambda (folder)(cadr (cddddr folder))))
 
 (define get-seguridad-folder(lambda (folder)(caddr (cddddr folder))))
-
-(define get-contenido-folder(lambda (folder)(cadddr (cddddr folder))))
 
 (define get-ubicacion-folder(lambda (folder)(cddddr (cddddr folder))))
 
@@ -57,7 +57,7 @@
 (define set-contenido-folder 
   (lambda (folder contenido)
     (make-folder (get-nombre-folder folder)
-                 contenido
+                 (cons contenido(get-contenido-folder folder))
                  (get-fecha-creacion-folder folder)
                  (get-fecha-modif-folder folder)
                  (get-creador-user-folder folder)
