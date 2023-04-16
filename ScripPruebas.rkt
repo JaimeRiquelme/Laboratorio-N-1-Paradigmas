@@ -81,41 +81,40 @@
 (define S38 ((run S35 del) "goo4.docx"))
 (define S39 ((run S35 cd) ".."))
 (define S40 ((run S35 del) "folder1"))
+;borrando una carpeta
+(define S41 ((run S39 rd) "folder1"))  ;no debería borrarla, pues tiene archivos
+(define S42 ((run S41 cd) "folder1"))
+(define S43 ((run S42 del) "*.*"))
+(define S44 ((run S43 cd) ".."))
+(define S45 ((run S44 rd) "folder1"))
 
 
+(define prueba3 (SyMDrive9 S35 "folder1"))
 
 
-S38
-S39
-S40
-
-
-
-
-
-
-
-
-
-
-
+(define pathp "c:/folder3/")
+(define pathp2 "d:/")
 
 
 
 
 
 
-;añadiendo carpetas. Incluye casos de carpetas duplicadas.
-#|(define S13 ((run S12 md) "folder1"))
-(define S14 ((run S13 md) "folder2"))
-(define S15 ((run S14 md) "folder2"))
-(define S16 ((run S15 md) "folder3"))
 
-S13
-S14
-S15
-S16
-|#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

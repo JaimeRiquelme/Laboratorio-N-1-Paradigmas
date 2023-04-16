@@ -92,7 +92,7 @@
 
 (define set-drive-system(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (get-ruta-system system)
                  (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
-(define set-drive-system2(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (string-append(string(get-current-drive-system system)) ":/")
+(define set-drive-system2(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (string-append(string(car(get-current-drive-system system))) ":/")
                  (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
 
 ;Nombre del modificador: set-usuarios-system
@@ -159,12 +159,12 @@
                        (cons (drive letra nombre capacidad) (get-drive-system system))
                        (get-usuarios-system system)
                        (if (null? (get-drive-system system))
-                           (string-append (string letra)":/" (get-ruta-system system))
+                           (string-append (string-upcase(string letra))":/" (get-ruta-system system))
                            (get-ruta-system system))
                        (get-fecha-system system)
                        (get-logeado-system system)
                        (if(null? (get-current-drive-system system))
-                          (list letra)
+                          (list (char-upcase letra))
                           (get-current-drive-system system)))
           system))))
 
@@ -245,7 +245,7 @@
               (make-system (get-nombre-system system)
                            (get-drive-system system)
                            (get-usuarios-system system)
-                           (string-append (string drive)":/")
+                           (string-append (string-upcase(string drive))":/")
                            (get-fecha-system system)
                            (get-logeado-system system)
                            (currentdrive drive))
@@ -277,7 +277,7 @@
   (lambda (system)
     (lambda(nombre)
       (set-drive-system system (SyMDrive system (string (car (get-current-drive-system system)))
-                                         nombre)))))
+                                         (string-upcase nombre))))))
 
 ;Nombre de la función: folder
 ;Dominio: system X name (string)
@@ -347,10 +347,10 @@
                 (if(equal? ".." nuevaruta)
                    (set-ruta-system system (cdpunto (get-ruta-system system)))
                    (if(ispath? system nuevaruta)
-                      (make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) nuevaruta
-                                   (get-fecha-system system) (get-logeado-system system)(string-ref (car (string-split nuevaruta ":"))0))
+                      (make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) (string-upcase nuevaruta)
+                                   (get-fecha-system system) (get-logeado-system system)(list(string-ref (car (string-split nuevaruta ":"))0)))
                       (if (SyMDrive2 system (string (car (get-current-drive-system system))) nuevaruta)
-                          (set-ruta-system system (string-append (get-ruta-system system) nuevaruta "/"))               
+                          (set-ruta-system system (string-append (get-ruta-system system) (string-upcase nuevaruta) "/"))               
                        system))))          
           system))))
 
@@ -385,9 +385,9 @@
          (if(equal? "*.*" condicion)
             (set-drive-system system (SyMDrive4 system))
             (if(equal? (length (string-split condicion "."))1)
-               (set-drive-system2 system (SyMDrive5 system condicion));significa que es una carpeta ,elimino carpeta
+               (set-drive-system2 system (SyMDrive5 system (string-upcase condicion)));significa que es una carpeta ,elimino carpeta
                (if(equal? (length(string-split condicion "."))2)
-                  (set-drive-system system (SyMDrive6 system condicion));significa que es un file, elimino file
+                  (set-drive-system system (SyMDrive6 system (string-upcase condicion)));significa que es un file, elimino file
                   system)))
          system))))
 
@@ -406,7 +406,7 @@
 (define file
   (lambda (nombre extencion contenido . seguridad)
       (let ((fecha (fecha-actual)))
-        (make-folder nombre
+        (make-folder (string-upcase nombre)
                      extencion
                      contenido
                      fecha
@@ -515,7 +515,7 @@
         (if (null? drives)
             #f
             (if (equal? (string (get-letra-drive (car drives))) letra)
-                (buscarfolder (cadddr(car drives)) nombre)                
+                (buscarfolder (cadddr(car drives)) (string-upcase nombre))                
                 (buscador (cdr drives) (append lista (list (car drives))))))))
     (buscador (cadr system) '())))
 
@@ -588,7 +588,7 @@
 (define carpetactual
   (lambda (system)
     (let ((ruta (get-ruta-system system)))
-      (car (reverse (string-split (list->string (string->list ruta)) "/"))))))
+      (car (reverse (string-split  ruta "/"))))))
 
 
 ;Nombre de la función: esactual?
@@ -616,7 +616,7 @@
       (lambda (drives lista)
         (if (null? drives)
             lista
-            (if (equal? (string (get-letra-drive (car drives))) (string(get-current-drive-system system)))
+            (if (equal? (string (get-letra-drive (car drives))) (string(car(get-current-drive-system system))))
                 (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder system filecreado (car drives)) (car drives)))))
                 (buscador (cdr drives) (append lista (list (car drives))))))))
     (buscador (cadr system) '())))
@@ -672,7 +672,7 @@
       (lambda (drives lista)
         (if (null? drives)
             lista
-            (if (equal? (string (get-letra-drive (car drives))) (string(get-current-drive-system system)))
+            (if (equal? (string (get-letra-drive (car drives))) (string(car(get-current-drive-system system))))
                 (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder2 system (car drives)) (car drives)))))
                 (buscador (cdr drives) (append lista (list (car drives))))))))
     (buscador (cadr system) '())))
@@ -714,7 +714,7 @@
       (lambda (drives lista)
         (if (null? drives)
             lista
-            (if (equal? (string (get-letra-drive (car drives))) (string(get-current-drive-system system)))
+            (if (equal? (string (get-letra-drive (car drives))) (string(car(get-current-drive-system system))))
                 (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder3 system (car drives) nombreeliminar) (car drives)))))
                 (buscador (cdr drives) (append lista (list (car drives))))))))
     (buscador (cadr system) '())))
@@ -757,7 +757,7 @@
       (lambda (drives lista)
         (if (null? drives)
             lista
-            (if (equal? (string (get-letra-drive (car drives))) (string(get-current-drive-system system)))
+            (if (equal? (string (get-letra-drive (car drives))) (string(car(get-current-drive-system system))))
                 (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder4 system (car drives) nombreeliminar) (car drives)))))
                 (buscador (cdr drives) (append lista (list (car drives))))))))
     (buscador (cadr system) '())))
@@ -816,3 +816,100 @@
 
 (define nombrefile
   (lambda (file)(car(string-split file "."))))
+
+(define rd
+  (lambda(system)
+    (lambda (carpeta)
+      (set-drive-system system (SyMDrive8 system carpeta)))))
+
+(define SyMDrive8
+  (lambda (system nombreeliminar)
+    (define buscador
+      (lambda (drives lista)
+        (if (null? drives)
+            lista
+            (if (equal? (string (get-letra-drive (car drives))) (string(car(get-current-drive-system system))))
+                (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder5 system (car drives) nombreeliminar) (car drives)))))
+                (buscador (cdr drives) (append lista (list (car drives))))))))
+    (buscador (cadr system) '())))
+
+(define SyMFolder5
+  (lambda(system drive nombreeliminar)
+    (define buscar
+      (lambda(folders lista)
+        (if(null? folders)
+           lista
+           (if(equal? (get-nombre-folder(car folders))nombreeliminar)
+              (if (contenido? (car folders))
+                 (buscar (cdr folders)lista)
+                 (buscar (cdr folders)(append lista(list(car folders)))))
+              (buscar (cdr folders)(append lista(list(car folders))))))))
+    (buscar (get-contenido-drive drive) '())))
+
+(define contenido?
+  (lambda(folder)(null?(get-contenido-folder folder))))
+
+
+
+(define esraiz?
+  (lambda (system nombre)
+    (if(member (string-upcase(car(string-split (car(reverse(string-split nombre "/"))) ":"))) (map string(map car (get-drive-system system))))
+       #t
+       #f)))
+
+
+
+
+
+
+
+
+(define SyMDrive9
+  (lambda (system nombrecopia)
+    (define buscador
+      (lambda (drives nombrecopia)
+        (if (null? drives)
+            '()
+            (if (equal? (string (get-letra-drive (car drives))) (string (car (get-current-drive-system system))))
+                (copia system (car drives) nombrecopia)
+                (buscador (cdr drives) nombrecopia)))))
+    (buscador (cadr system) nombrecopia)))
+
+
+(define copia
+  (lambda (system drive nombrecopia)
+    (if (equal? (length (string-split nombrecopia ".")) 1)
+        (buscarfolder2 system (get-contenido-drive drive) (string-upcase nombrecopia) 1)
+        (if (equal? (length (string-split nombrecopia ".")) 2)
+            (buscarfolder2 system (get-contenido-drive drive) (string-upcase nombrecopia) 2)
+            null))))
+
+
+
+(define buscarfolder2
+  (lambda (system folders nombre opcion)
+    (if (equal? opcion 1)
+        (if (null? folders)
+            #t
+            (let ((folder (car folders)))
+              (if (equal? (get-nombre-folder folder) nombre)
+                  folder
+                  (buscarfolder2 system (cdr folders) nombre 1))))
+        (if (equal? opcion 2)
+            (if (null? folders)
+                '()
+                (let ((folder (car folders)))
+                  (if (equal? (get-nombre-folder folder) (carpetactual system))
+                      (buscarfile (get-contenido-folder folder) nombre)
+                      (buscarfolder2 system (cdr folders) nombre 2))))
+            null))))
+
+(define buscarfile
+  (lambda (files nombre)
+    (if (null? files)
+        null
+        (let ((archivo (car files)))
+          (if (equal? (get-nombre-file archivo) nombre)
+              archivo
+              (buscarfile (cdr files) nombre))))))
+
