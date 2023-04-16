@@ -76,26 +76,18 @@
 (define S34 ((run S33 add-file) (file "foo3.docx" "docx" "hello world 3")))
 (define S35 ((run S34 add-file) (file "goo4.docx" "docx" "hello world 4" #\h #\r)))
 
-(define S36 ((run S35 switch-drive) #\D))
 
-(define pathp "C:/folder1/folder221/")
-(define resultado ((rdcarpeta S35 )"C:/folder1/folder221/"))
-(define resultado2 ((rdcarpeta S35 )"nombrescarpeta"))
-S36
-
+;eliminando archivos
+(define S38 ((run S35 del) "goo4.docx"))
+(define S39 ((run S35 cd) ".."))
+(define S40 ((run S35 del) "folder1"))
 
 
 
 
-
-
-
-
-
-
-
-
-
+S38
+S39
+S40
 
 
 

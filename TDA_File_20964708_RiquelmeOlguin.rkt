@@ -1,6 +1,5 @@
 #lang racket
-
-(require "TDA_Folder_20964708_RiquelmeOlguin.rkt")
+(provide (all-defined-out))
 
 
 (define (make-file nombre extencion contenido-file fecha-creacion fecha-modificacion creador-user

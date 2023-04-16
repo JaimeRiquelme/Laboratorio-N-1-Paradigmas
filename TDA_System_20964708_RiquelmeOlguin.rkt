@@ -5,6 +5,7 @@
 (require "TDA_Drive_20964708_RiquelmeOlguin.rkt")
 (require "TDA_User_20964708_RiquelmeOlguin.rkt")
 (require "TDA_Folder_20964708_RiquelmeOlguin.rkt")
+(require "TDA_File_20964708_RiquelmeOlguin.rkt")
 
 (provide (all-defined-out))
 
@@ -90,6 +91,8 @@
 ;Descripción: Esta función toma un sistema system y un drive drive como argumentos, y devuelve un nuevo sistema que tiene la lista de unidades actualizada.
 
 (define set-drive-system(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (get-ruta-system system)
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
+(define set-drive-system2(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (string-append(string(get-current-drive-system system)) ":/")
                  (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
 
 ;Nombre del modificador: set-usuarios-system
@@ -365,12 +368,34 @@
       (make-system (get-nombre-system system) (buscarformat system letra nombre) (get-usuarios-system system) (get-ruta-system system)
                  (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)))))
 
+; Nombre de la función: del
+; Dominio: system X condicion
+; Recorrido: contenido del sistema
+; Recursión: ninguna
+; Descripción: Esta función toma un sistema 'system' como argumento y devuelve una función anónima que toma una condición 'condicion'.
+;              Si la ruta del sistema no está vacía, verifica si la condición es "*.*".
+;              Si es así, establece el drive actual del sistema en la lista de drives del sistema utilizando 'SyMDrive4'.
+;              Si la condición es una carpeta, elimina la carpeta utilizando 'SyMDrive5'.
+;              Si la condición es un archivo, elimina el archivo utilizando 'SyMDrive6'.
+;              Si la ruta del sistema está vacía, devuelve el sistema sin cambios.
+(define del
+  (lambda (system)
+    (lambda(condicion)
+      (if(not (null? (get-ruta-system system)))
+         (if(equal? "*.*" condicion)
+            (set-drive-system system (SyMDrive4 system))
+            (if(equal? (length (string-split condicion "."))1)
+               (set-drive-system2 system (SyMDrive5 system condicion));significa que es una carpeta ,elimino carpeta
+               (if(equal? (length(string-split condicion "."))2)
+                  (set-drive-system system (SyMDrive6 system condicion));significa que es un file, elimino file
+                  system)))
+         system))))
 
 
 
 
 
-;-----------------OTRAS-FUNCIONES-------------------;
+;-----------------OTRAS-FUNCIONES----------------------------------------------------------------------------------------------------;
 ;Nombre de la función: file
 ;Dominio: system X nombre X extensión X contenido X seguridad (opcional)
 ;Recorrido: archivo creado
@@ -618,7 +643,14 @@
     (buscar (get-contenido-drive drive) '())))
 
 
-;funcion que recibe un nombre o un path, retorna o el nombre de la carpeta o el nombre de la carpeta ultima de la direccion path.
+;Nombre de la función: rdcarpeta
+;Dominio: system X nombrecarpeta
+;Recorrido: nombre de la carpeta
+;Recursión: ninguna
+;Descripción: Esta función toma un sistema 'system' y un nombre de carpeta 'nombrecarpeta' como argumentos.
+; Verifica si 'nombrecarpeta' es una ruta válida en el sistema.
+; Si 'nombrecarpeta' es una ruta válida, devuelve el nombre de la carpeta más interna en la ruta.
+; Si 'nombrecarpeta' no es una ruta válida, devuelve 'nombrecarpeta' sin cambios.
 (define rdcarpeta
   (lambda (system)
     (lambda (nombrecarpeta)
@@ -626,30 +658,161 @@
          (car(reverse(string-split nombrecarpeta "/")))
          nombrecarpeta))))
 
+; Nombre de la función: SyMDrive4
+; Dominio: system
+; Recorrido: lista de drives
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system' como argumento y devuelve una lista de drives del sistema. 
+; Si un drive está actualmente en uso, devuelve el contenido de la unidad como una lista de elementos 'SyMFolder2'. 
+; Si el drive no está en uso, devuelve simplemente el nombre del drive.
+
+(define SyMDrive4
+  (lambda (system)
+    (define buscador
+      (lambda (drives lista)
+        (if (null? drives)
+            lista
+            (if (equal? (string (get-letra-drive (car drives))) (string(get-current-drive-system system)))
+                (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder2 system (car drives)) (car drives)))))
+                (buscador (cdr drives) (append lista (list (car drives))))))))
+    (buscador (cadr system) '())))
+
+; Nombre de la función: SyMFolder2
+; Dominio: system X drive
+; Recorrido: lista de folders en el drive
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system' y un drive 'drive' como argumentos. 
+;              Devuelve una lista de folders en el drive, excepto el folder actual, que se devuelve como 'null'.
+;              La lista de folders se devuelve en orden alfabético. 
+;              Si no hay folders en el drive, devuelve una lista vacía.
+
+(define SyMFolder2
+  (lambda(system drive)
+    (define buscar
+      (lambda(folders lista)
+        (if(null? folders)
+           lista
+           (if(equal? (get-nombre-folder(car folders))(carpetactual system))
+                 (buscar (cdr folders)(append lista(list(set-contenido-folder2 (car folders) null))))
+                 (buscar (cdr folders)(append lista(list(car folders))))))))
+    (buscar (get-contenido-drive drive) '())))
 
 
 
 
+; Nombre de la función: SyMDrive5
+; Dominio: system X nombreeliminar
+; Recorrido: lista de drives
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system' y un nombre de carpeta 'nombreeliminar' como argumentos.
+;              Devuelve una lista de drives del sistema.
+;              Si un drive está actualmente en uso, elimina la carpeta con el nombre 'nombreeliminar' del contenido de la unidad.
+;              Si el drive no está en uso, devuelve simplemente el nombre del drive.
+(define SyMDrive5
+  (lambda (system nombreeliminar)
+    (define buscador
+      (lambda (drives lista)
+        (if (null? drives)
+            lista
+            (if (equal? (string (get-letra-drive (car drives))) (string(get-current-drive-system system)))
+                (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder3 system (car drives) nombreeliminar) (car drives)))))
+                (buscador (cdr drives) (append lista (list (car drives))))))))
+    (buscador (cadr system) '())))
 
 
 
+; Nombre de la función: SyMFolder3
+; Dominio: system X drive X nombreeliminar
+; Recorrido: lista de folders en el drive
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system', un drive 'drive' y un nombre de carpeta 'nombreeliminar' como argumentos. 
+;              Devuelve una lista de folders en el drive, excepto la carpeta con el nombre 'nombreeliminar', que se elimina.
+;              La lista de folders se devuelve en orden alfabético. 
+;              Si no hay folders en el drive, devuelve una lista vacía.
+(define SyMFolder3
+  (lambda(system drive nombreeliminar)
+    (define buscar
+      (lambda(folders lista)
+        (if(null? folders)
+           lista
+           (if(equal? (get-nombre-folder(car folders))nombreeliminar)
+                 (buscar (cdr folders)lista)
+                 (buscar (cdr folders)(append lista(list(car folders))))))))
+    (buscar (get-contenido-drive drive) '())))
+
+
+; Nombre de la función: SyMDrive6
+; Dominio: system X nombreeliminar
+; Recorrido: lista de drives
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system' y un nombre de archivo 'nombreeliminar' como argumentos.
+;              Devuelve una lista de drives del sistema.
+;              Si un drive está actualmente en uso, elimina el archivo con el nombre 'nombreeliminar' del contenido de la unidad.
+;              Si el drive no está en uso, devuelve simplemente el nombre del drive.
+
+
+(define SyMDrive6
+  (lambda (system nombreeliminar)
+    (define buscador
+      (lambda (drives lista)
+        (if (null? drives)
+            lista
+            (if (equal? (string (get-letra-drive (car drives))) (string(get-current-drive-system system)))
+                (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder4 system (car drives) nombreeliminar) (car drives)))))
+                (buscador (cdr drives) (append lista (list (car drives))))))))
+    (buscador (cadr system) '())))
+
+
+; Nombre de la función: SyMFolder4
+; Dominio: system X drive X nombreeliminar
+; Recorrido: lista de folders en el drive
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system', un drive 'drive' y un nombre de archivo 'nombreeliminar' como argumentos. 
+;              Devuelve una lista de folders en el drive, excepto el folder actual, que se devuelve con el archivo con el nombre 'nombreeliminar' eliminado del contenido.
+;              La lista de folders se devuelve en orden alfabético. 
+;              Si no hay folders en el drive, devuelve una lista vacía.
 
 
 
+(define SyMFolder4
+  (lambda(system drive nombreeliminar)
+    (define buscar
+      (lambda(folders lista)
+        (if(null? folders)
+           lista
+           (if(equal? (get-nombre-folder(car folders))(carpetactual system))
+                 (buscar (cdr folders)(append lista (list(set-contenido-folder2 (car folders) (SyMFile system (car folders) nombreeliminar)))))
+                 (buscar (cdr folders)(append lista(list(car folders))))))))
+    (buscar (get-contenido-drive drive) '())))
+
+; Nombre de la función: SyMFile
+; Dominio: system X folder X nombreeliminar
+; Recorrido: lista de archivos en el folder
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system', un folder 'folder' y un nombre de archivo 'nombreeliminar' como argumentos.
+;              Devuelve una lista de archivos en el folder, excepto el archivo con el nombre 'nombreeliminar', que se elimina.
+;              La lista de archivos se devuelve en orden alfabético. 
+;              Si no hay archivos en el folder, devuelve una lista vacía.
 
 
+(define SyMFile
+  (lambda (system folder nombreeliminar)
+    (define buscar2
+      (lambda(files lista)
+        (if(null? files)
+           lista
+           (if(equal? (get-nombre-file (car files))nombreeliminar)
+              (buscar2 (cdr files)lista)
+              (buscar2 (cdr files)(append lista(list(car files))))))))
+    (buscar2 (get-contenido-folder folder) '())))
 
 
+; Nombre de la función: nombrefile
+; Dominio: file
+; Recorrido: string
+; Recursión: ninguna
+; Descripción: Esta función toma un nombre de archivo 'file' como argumento.
+;              Devuelve el nombre del archivo sin la extensión.
 
-
-
-
-
-
-
-
-
-
-
-
-
+(define nombrefile
+  (lambda (file)(car(string-split file "."))))

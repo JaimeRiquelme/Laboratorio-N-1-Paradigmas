@@ -66,6 +66,18 @@
                  (get-cantidad-archivos-folder folder)
                  (get-seguridad-folder folder)
                  (get-ubicacion-folder folder))))
+(define set-contenido-folder2 
+  (lambda (folder contenido)
+    (make-folder (get-nombre-folder folder)
+                 contenido
+                 (get-fecha-creacion-folder folder)
+                 (get-fecha-modif-folder folder)
+                 (get-creador-user-folder folder)
+                 (get-compartidos-user-folder folder)
+                 (get-tamano-folder folder)
+                 (get-cantidad-archivos-folder folder)
+                 (get-seguridad-folder folder)
+                 (get-ubicacion-folder folder))))
 
 (define set-fecha-creacion-folder 
   (lambda (folder fecha)
