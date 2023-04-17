@@ -20,13 +20,7 @@
   (list nombre drive usuarios ruta fecha-actual logeado current-drive))
 
 
-;Nombre de la función: system
-;Dominio: nombre (string)
-;Recorrido: system
-;Descripción: Esta función toma un nombre como argumento y devuelve un sistema vacío con ese nombre.
-; El sistema vacío no tiene drives, usuarios, ruta actual, fecha actual, usuario logeado o unidad de drive actual.
-(define (system nombre)
-  (make-system nombre '() '() "" (fecha-actual) '() null ))
+
 ;Nombre de la función: get-nombre-system
 ;Dominio: system
 ;Recorrido: system
@@ -131,7 +125,13 @@
 
 
 
-
+;Nombre de la función: system
+;Dominio: nombre (string)
+;Recorrido: system
+;Descripción: Esta función toma un nombre como argumento y devuelve un sistema vacío con ese nombre.
+; El sistema vacío no tiene drives, usuarios, ruta actual, fecha actual, usuario logeado o unidad de drive actual.
+(define (system nombre)
+  (make-system nombre '() '() "" (fecha-actual) '() null ))
 
 ;Nombre de la función: run
 ;Dominio: sistema X comando
@@ -170,14 +170,14 @@
 
 
 
-; add-user
+; Nombre de la funcion: Register
 ; Dominio: system X name-user (string)
 ; Recorrido: system
 ; Descripción: Función para agregar un nuevo usuario al sistema. Toma un sistema system y un nombre de usuario name-user como argumentos.
 ; Si el nombre de usuario ya existe en el sistema, devuelve el mismo sistema sin cambios.
 ; Si el nombre de usuario no existe en el sistema, crea un nuevo usuario con el nombre especificado y lo agrega a la lista de usuarios del sistema.
 ; Devuelve el sistema actualizado con el nuevo usuario agregado.
-(define add-user
+(define Register
   (lambda (system)
     (lambda (name-user)
       (if (member name-user (map car (get-usuarios-system system)))
@@ -279,51 +279,6 @@
       (set-drive-system system (SyMDrive system (string (car (get-current-drive-system system)))
                                          (string-upcase nombre))))))
 
-;Nombre de la función: folder
-;Dominio: system X name (string)
-;Recorrido: folder
-;Descripción: Esta función toma un sistema system y un nombre nombre como argumentos, crea una nueva carpeta con el nombre
-;proporcionado nombre en la ruta actual del usuario en el sistema, y devuelve la carpeta recién creada.
-(define folder
-  (lambda (system nombre)
-      (let ((fecha (fecha-actual)))
-        (make-folder nombre
-                     null
-                     fecha
-                     fecha
-                     (get-logeado-system system)
-                     null
-                     null
-                     null
-                     null
-                     (get-ruta-system system)))))
-
-
-
-
-
-
-
-
-
-
-
-
-;Nombre de la función: add-file
-;Dominio: system X filecreado
-;Recorrido: Lista de drives actualizada
-;Descripción: Esta función toma un sistema system y un archivo filecreado como argumentos.
-; Utiliza la función anónima SyMDrive3 para buscar la unidad correspondiente al archivo y actualizar la lista de drives.
-; Devuelve la lista de drives actualizada con el archivo agregado.
-(define add-file
-  (lambda (system)
-    (lambda (filecreado)
-      (set-drive-system system (SyMDrive3 system filecreado )))))
-
-
-
-
-
 
 
 
@@ -354,19 +309,26 @@
                        system))))          
           system))))
 
-;Nombre de la función: format
-;Dominio: system X letra X nombre
-;Recorrido: sistema actualizado
-;Recursión: ninguna
-;Descripción: Esta función toma un sistema system, una letra de unidad letra y un nombre de unidad nombre como argumentos.
-; Utiliza la función buscarformat para buscar la unidad correspondiente al formato solicitado y actualizar el sistema en consecuencia.
-; La función devuelve el sistema actualizado con la unidad de disco formateada.
-
-(define format
+;Nombre de la función: add-file
+;Dominio: system X filecreado
+;Recorrido: Lista de drives actualizada
+;Descripción: Esta función toma un sistema system y un archivo filecreado como argumentos.
+; Utiliza la función anónima SyMDrive3 para buscar la unidad correspondiente al archivo y actualizar la lista de drives.
+; Devuelve la lista de drives actualizada con el archivo agregado.
+(define add-file
   (lambda (system)
-    (lambda (letra nombre)
-      (make-system (get-nombre-system system) (buscarformat system letra nombre) (get-usuarios-system system) (get-ruta-system system)
-                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)))))
+    (lambda (filecreado)
+      (set-drive-system system (SyMDrive3 system filecreado )))))
+
+
+
+
+
+
+
+
+
+
 
 ; Nombre de la función: del
 ; Dominio: system X condicion
@@ -391,6 +353,47 @@
                   system)))
          system))))
 
+; Nombre de la función: rd
+; Dominio: system X carpera(string)
+; Recorrido: system
+; Recursión: no aplica
+; Descripción: Esta función toma un sistema 'system' como argumento y devuelve una función lambda que toma 'carpeta'.
+;              La función lambda llama a la función SyMDrive8 con el sistema y la carpeta para eliminarla.
+;              Devuelve el sistema actualizado con el resultado de SyMDrive8.
+
+(define rd
+  (lambda(system)
+    (lambda (carpeta)
+      (set-drive-system system (SyMDrive8 system carpeta)))))
+
+; Nombre de la función: copy
+; Dominio: system
+; Recorrido: función lambda (nombrecopia X ruta)
+; Recursión: no aplica
+; Descripción: Esta función toma un sistema 'system' como argumento y devuelve una función lambda que toma 'nombrecopia' y 'ruta'.
+;              La función lambda verifica si la ruta es una carpeta raíz y llama a la función SyMDrive11 con diferentes opciones.
+;              Devuelve el sistema actualizado con los resultados de SyMDrive11.
+
+(define copy
+  (lambda (system)
+    (lambda (nombrecopia ruta)
+      (if(esraiz? system ruta)
+         (set-drive-system system (SyMDrive11 system ruta nombrecopia 1 ))
+         (set-drive-system system (SyMDrive11 system ruta nombrecopia 2))))))
+
+;Nombre de la función: format
+;Dominio: system X letra X nombre
+;Recorrido: sistema actualizado
+;Recursión: ninguna
+;Descripción: Esta función toma un sistema system, una letra de unidad letra y un nombre de unidad nombre como argumentos.
+; Utiliza la función buscarformat para buscar la unidad correspondiente al formato solicitado y actualizar el sistema en consecuencia.
+; La función devuelve el sistema actualizado con la unidad de disco formateada.
+
+(define format
+  (lambda (system)
+    (lambda (letra nombre)
+      (make-system (get-nombre-system system) (buscarformat system letra nombre) (get-usuarios-system system) (get-ruta-system system)
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)))))
 
 
 
@@ -416,6 +419,26 @@
                      null
                      seguridad                   
                      null))))
+
+;Nombre de la función: folder
+;Dominio: system X name (string)
+;Recorrido: folder
+;Descripción: Esta función toma un sistema system y un nombre nombre como argumentos, crea una nueva carpeta con el nombre
+;proporcionado nombre en la ruta actual del usuario en el sistema, y devuelve la carpeta recién creada.
+(define folder
+  (lambda (system nombre)
+      (let ((fecha (fecha-actual)))
+        (make-folder nombre
+                     null
+                     fecha
+                     fecha
+                     (get-logeado-system system)
+                     null
+                     null
+                     null
+                     null
+                     (get-ruta-system system)))))
+
 
 ;Nombre de la función: ispath?
 ;Dominio: system X ruta
@@ -817,10 +840,16 @@
 (define nombrefile
   (lambda (file)(car(string-split file "."))))
 
-(define rd
-  (lambda(system)
-    (lambda (carpeta)
-      (set-drive-system system (SyMDrive8 system carpeta)))))
+; Nombre de la función: SyMDrive8
+; Dominio: system X nombreeliminar
+; Recorrido: lista de drives actualizados en el sistema
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system' y un nombre de carpeta 'nombreeliminar' como argumentos.
+;              Recorre todos los drives en el sistema y si el drive actual coincide con el drive en el sistema,
+;              llama a la función SyMFolder5 para eliminar la carpeta con el nombre 'nombreeliminar' en el drive.
+;              Devuelve una lista de drives actualizados en el sistema.
+;              Si no hay drives en el sistema, devuelve una lista vacía.
+
 
 (define SyMDrive8
   (lambda (system nombreeliminar)
@@ -833,23 +862,38 @@
                 (buscador (cdr drives) (append lista (list (car drives))))))))
     (buscador (cadr system) '())))
 
+; Nombre de la función: SyMFolder5
+; Dominio: system X drive X nombreeliminar
+; Recorrido: lista de folders actualizados en el drive
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system', un drive 'drive' y un nombre de carpeta 'nombreeliminar' como argumentos.
+;              Recorre todos los folders en el drive y si el nombre del folder coincide con 'nombreeliminar',
+;              verifica si el folder está vacío antes de eliminarlo. Si no coincide, se mantiene en la lista.
+;              Devuelve una lista de folders actualizados en el drive, excluyendo el folder con nombre 'nombreeliminar' si está vacío.
+;              Si no hay folders en el drive, devuelve una lista vacía.
+
+
 (define SyMFolder5
   (lambda(system drive nombreeliminar)
     (define buscar
       (lambda(folders lista)
         (if(null? folders)
            lista
-           (if(equal? (get-nombre-folder(car folders))nombreeliminar)
+           (if(equal? (get-nombre-folder(car folders))(string-upcase nombreeliminar))
               (if (contenido? (car folders))
                  (buscar (cdr folders)lista)
                  (buscar (cdr folders)(append lista(list(car folders)))))
               (buscar (cdr folders)(append lista(list(car folders))))))))
     (buscar (get-contenido-drive drive) '())))
 
-(define contenido?
-  (lambda(folder)(null?(get-contenido-folder folder))))
 
-
+; Nombre de la función: esraiz?
+; Dominio: system X nombre
+; Recorrido: booleano
+; Recursión: no aplica
+; Descripción: Esta función toma un sistema 'system' y un nombre de carpeta 'nombre' como argumentos.
+;              Verifica si el nombre de la carpeta corresponde a una carpeta raíz en el sistema.
+;              Devuelve #t si la carpeta es una carpeta raíz, #f en caso contrario.
 
 (define esraiz?
   (lambda (system nombre)
@@ -857,14 +901,18 @@
        #t
        #f)))
 
+; Nombre de la función: SyMDrive9
+; Dominio: system X nombrecopia
+; Recorrido: resultado de la función copia, un folder, un archivo o '()
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system' y un nombre 'nombrecopia' como argumentos.
+;              Recorre todos los drives en el sistema y si el drive actual coincide con el drive en el sistema,
+;              llama a la función copia para buscar el archivo o carpeta con el nombre 'nombrecopia'.
+;              Devuelve el resultado de la función copia, que puede ser un folder, un archivo o '()'.
+;              Si no hay drives en el sistema, devuelve '().
 
 
-
-
-
-
-
-(define SyMDrive9
+(define buscarcopia 
   (lambda (system nombrecopia)
     (define buscador
       (lambda (drives nombrecopia)
@@ -875,6 +923,13 @@
                 (buscador (cdr drives) nombrecopia)))))
     (buscador (cadr system) nombrecopia)))
 
+; Nombre de la función: copia
+; Dominio: system X drive X nombrecopia
+; Recorrido: resultado de la función buscarfolder2, un folder, un archivo o null
+; Recursión: no aplica
+; Descripción: Esta función toma un sistema 'system', un drive 'drive' y un nombre 'nombrecopia' como argumentos.
+;              Dependiendo de si 'nombrecopia' es un archivo o una carpeta, llama a la función buscarfolder2 con diferentes opciones.
+;              Devuelve el resultado de la función buscarfolder2, que puede ser un folder, un archivo o null.
 
 (define copia
   (lambda (system drive nombrecopia)
@@ -884,13 +939,21 @@
             (buscarfolder2 system (get-contenido-drive drive) (string-upcase nombrecopia) 2)
             null))))
 
+; Nombre de la función: buscarfolder2
+; Dominio: system X folders X nombre X opcion
+; Recorrido: folder, archivo o null, según la opción
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system', una lista de folders 'folders', un nombre 'nombre' y una opción como argumentos.
+;              Si la opción es 1, busca un folder con el nombre 'nombre' y devuelve el folder si se encuentra.
+;              Si la opción es 2, busca un archivo con el nombre 'nombre' y devuelve el archivo si se encuentra.
+;              Devuelve null si no se encuentra el folder o el archivo.
 
 
 (define buscarfolder2
   (lambda (system folders nombre opcion)
     (if (equal? opcion 1)
         (if (null? folders)
-            #t
+            #f
             (let ((folder (car folders)))
               (if (equal? (get-nombre-folder folder) nombre)
                   folder
@@ -904,6 +967,15 @@
                       (buscarfolder2 system (cdr folders) nombre 2))))
             null))))
 
+; Nombre de la función: buscarfile
+; Dominio: files X nombre
+; Recorrido: archivo encontrado o null
+; Recursión: recursión de cola
+; Descripción: Esta función toma una lista de archivos 'files' y un nombre 'nombre' como argumentos.
+;              Busca un archivo con el nombre 'nombre' en la lista de archivos.
+;              Devuelve el archivo encontrado o null si no se encuentra el archivo.
+
+
 (define buscarfile
   (lambda (files nombre)
     (if (null? files)
@@ -912,4 +984,77 @@
           (if (equal? (get-nombre-file archivo) nombre)
               archivo
               (buscarfile (cdr files) nombre))))))
+
+; Nombre de la función: ubicacioncopia
+; Dominio: ruta
+; Recorrido: letra del drive en mayúsculas
+; Recursión: no aplica
+; Descripción: Esta función toma una ruta como argumento.
+;              Extrae la letra del drive de la ruta y la devuelve en mayúsculas.
+
+ 
+
+(define ubicacioncopia
+  (lambda (ruta)(string-upcase(car(string-split (car(reverse(string-split ruta "/"))) ":")))))
+
+; Nombre de la función: SyMDrive11
+; Dominio: system X ubicacion X nombrecopia X opcion
+; Recorrido: lista de drives actualizada
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system', una ubicación 'ubicacion', un nombre 'nombrecopia' y una opción como argumentos.
+;              Recorre todos los drives en el sistema y si el drive actual coincide con la ubicación,
+;              llama a las funciones SyMDrive9 y SyMFolder6 para copiar el archivo o carpeta según la opción.
+;              Devuelve un sistema con la lista de drives actualizados.
+;              Si no hay drives en el sistema, devuelve un sistema con una lista vacía de drives.
+       
+
+(define SyMDrive11
+  (lambda (system ubicacion nombrecopia opcion)
+    (define buscador
+      (lambda (drives lista)
+        (if (null? drives)
+            lista
+            (if (equal? (string (get-letra-drive (car drives))) (string-upcase (car (string-split ubicacion ":"))))
+                (if (equal? opcion 1)
+                    (let ((folder-copiado (buscarcopia system nombrecopia)))
+                      (buscador (cdr drives) (append lista (list (set-contenido-drive folder-copiado (car drives))))))
+                    (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder6 system (ubicacioncopia ubicacion) nombrecopia (car drives)) (car drives))))))
+                (buscador (cdr drives) (append lista (list (car drives))))))))
+    (buscador (cadr system) '())))
+
+
+; Nombre de la función: SyMFolder6
+; Dominio: system X direcopia X nombrecopia X drive
+; Recorrido: lista de folders actualizados en el drive
+; Recursión: recursión de cola
+; Descripción: Esta función toma un sistema 'system', un directorio 'direcopia', un nombre 'nombrecopia' y un drive 'drive' como argumentos.
+;              Recorre todos los folders en el drive y si el nombre del folder coincide con 'direcopia',
+;              llama a la función SyMDrive9 para copiar el archivo o carpeta con el nombre 'nombrecopia' al folder.
+;              Devuelve una lista de folders actualizados en el drive.
+;              Si no hay folders en el drive, devuelve una lista vacía.
+
+
+(define SyMFolder6
+  (lambda(system direcopia nombrecopia drive)
+    (define buscar
+      (lambda(folders lista)
+        (if(null? folders)
+           lista
+           (if(equal? (get-nombre-folder(car folders)) direcopia)
+                 (buscar (cdr folders)(append lista(list(set-contenido-folder (car folders) (buscarcopia system nombrecopia)))))
+                 (buscar (cdr folders)(append lista(list(car folders))))))))
+    (buscar (get-contenido-drive drive) '())))
+
+
+
+(define move
+  (lambda (system)
+    (lambda (archivomov rutamov)
+      (let ((copy-fn (copy system)))
+        (let ((new-system (copy-fn archivomov rutamov)))
+          (let ((del-fn (del new-system)))
+            (let ((final-system (del-fn archivomov)))
+              final-system))))))) 
+
+
 

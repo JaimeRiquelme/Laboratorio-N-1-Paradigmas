@@ -34,13 +34,46 @@
 
 ;selectores
 
+; Nombre de la función: get-letra-drive
+; Dominio: drive
+; Recorrido: letra del drive
+; Recursión: no aplica
+; Descripción: Esta función toma un objeto drive como argumento y devuelve su letra.
+
 (define get-letra-drive (lambda (drive)(car drive)))
+
+; Nombre de la función: get-nombre-drive
+; Dominio: drive
+; Recorrido: nombre del drive
+; Recursión: no aplica
+; Descripción: Esta función toma un objeto drive como argumento y devuelve su nombre.
+
 (define get-nombre-drive (lambda (drive)(cadr drive)))
+
+; Nombre de la función: get-capacidad-drive
+; Dominio: drive
+; Recorrido: capacidad del drive
+; Recursión: no aplica
+; Descripción: Esta función toma un objeto drive como argumento y devuelve su capacidad.
+
 (define get-capacidad-drive (lambda (drive)(caddr drive)))
+
+; Nombre de la función: get-contenido-drive
+; Dominio: drive
+; Recorrido: contenido del drive
+; Recursión: no aplica
+; Descripción: Esta función toma un objeto drive como argumento y devuelve su contenido.
 
 (define get-contenido-drive (lambda (drive)(car (reverse drive))))
 
 ;modificadores
+
+; Nombre de la función: set-nombre-drive
+; Dominio: nombre, drive
+; Recorrido: nuevo objeto drive
+; Recursión: no aplica
+; Descripción: Esta función toma un nombre y un objeto drive como argumentos y devuelve un nuevo objeto drive con el nombre actualizado.
+
 
 (define set-nombre-drive
   (lambda (nombre drive)
@@ -49,12 +82,26 @@
                 (get-contenido-drive drive)
                 (get-contenido-drive drive))))
 
+; Nombre de la función: set-contenido-drive
+; Dominio: contenido, drive
+; Recorrido: nuevo objeto drive
+; Recursión: no aplica
+; Descripción: Esta función toma un contenido y un objeto drive como argumentos y devuelve un nuevo objeto drive con el contenido añadido al principio de la lista de contenidos existente.
+
+
 (define set-contenido-drive
   (lambda (contenido drive)
     (make-drive (get-letra-drive drive)
                 (get-nombre-drive drive)
                 (get-capacidad-drive drive)
                 (cons contenido (get-contenido-drive drive)))))
+
+; Nombre de la función: set-contenido-drive2
+; Dominio: contenido, drive
+; Recorrido: nuevo objeto drive
+; Recursión: no aplica
+; Descripción: Esta función toma un contenido y un objeto drive como argumentos y devuelve un nuevo objeto drive con el contenido actualizado.
+
 
 (define set-contenido-drive2
   (lambda (contenido drive)

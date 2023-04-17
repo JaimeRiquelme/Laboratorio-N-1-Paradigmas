@@ -14,9 +14,9 @@
 (define S3 ((run S2 add-drive) #\D "Util" 2000))
 
 ;añadiendo usuarios. Incluye caso S6 que intenta registrar usuario duplicado
-(define S4 ((run S3 add-user) "user1"))
-(define S5 ((run S4 add-user) "user1"))
-(define S6 ((run S5 add-user) "user2"))
+(define S4 ((run S3 Register) "user1"))
+(define S5 ((run S4 Register) "user1"))
+(define S6 ((run S5 Register) "user2"))
 
 ;iniciando sesión con usuarios. Incluye caso S8 que intenta iniciar sesión con user2 sin antes haber salido con user1
 (define S7 ((run S6 login) "user1"))
@@ -88,12 +88,15 @@
 (define S44 ((run S43 cd) ".."))
 (define S45 ((run S44 rd) "folder1"))
 
+;copiando carpetas y archivos
+(define S46 ((run S35 copy) "foo1.txt" "c:/folder3/"))
+(define S47 ((run S46 cd) ".."))
+(define S48 ((run S47 copy) "folder1" "d:/"))
 
-(define prueba3 (SyMDrive9 S35 "folder1"))
-
-
-(define pathp "c:/folder3/")
-(define pathp2 "d:/")
+;moviendo carpetas y archivos
+(define S49 ((run S48 move) "folder3" "d:/"))
+(define S50 ((run S49 cd) "folder1"))
+(define S51 ((run S50 move) "foo3.docx" "d:/folder3/"))
 
 
 
