@@ -14,7 +14,7 @@
 
 (define make-currentdrive
   (lambda (drive)
-           (list drive)))
+           (list (char-upcase drive))))
 
 ;Nombre de la función: drive
 ;Dominio: letra (string) X nombre (string) X capacidad (number)

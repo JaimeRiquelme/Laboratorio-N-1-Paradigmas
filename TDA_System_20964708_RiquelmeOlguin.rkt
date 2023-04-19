@@ -16,8 +16,8 @@
 ;Descripción: Esta función toma un nombre de sistema nombre, una lista de drives drive, una lista de usuarios usuarios,
 ; una ruta actual de sistema ruta, la fecha actual fecha-actual, el usuario logeado en el sistema logeado y la letra de unidad
 ;actual current-drive. Retorna una lista que representa un sistema con la información proporcionada.
-(define (make-system nombre drive usuarios ruta fecha-actual logeado current-drive)
-  (list nombre drive usuarios ruta fecha-actual logeado current-drive))
+(define (make-system nombre drive usuarios ruta fecha-actual logeado current-drive papelera)
+  (list nombre drive usuarios ruta fecha-actual logeado current-drive papelera))
 
 
 
@@ -47,28 +47,31 @@
 ;Recorrido: ruta actual del sistema
 ;Descripción: Esta función toma un sistema system como argumento y devuelve la ruta actual del sistema.
 
-(define get-ruta-system (lambda(system)(cadddr(reverse system))))
+(define get-ruta-system (lambda (system) (cadddr system)))
+
 
 ;Nombre del selector: get-fecha-system
 ;Dominio: system
 ;Recorrido: fecha actual del sistema
 ;Descripción: Esta función toma un sistema system como argumento y devuelve la fecha actual del sistema.
 
-(define get-fecha-system (lambda (system) (caddr (reverse system))))
+(define get-fecha-system (lambda (system)(cadddr (reverse system))))
 
 ;Nombre del selector: get-logeado-system
 ;Dominio: system
 ;Recorrido: usuario logeado en el sistema
 ;Descripción: Esta función toma un sistema system como argumento y devuelve el usuario logeado en el sistema.
 
-(define get-logeado-system (lambda(system)(cadr(reverse system))))
+(define get-logeado-system (lambda(system)(caddr(reverse system))))
 
 ;Nombre del selector: get-current-drive-system
 ;Dominio: system
 ;Recorrido: letra de unidad actual del sistema
 ;Descripción: Esta función toma un sistema system como argumento y devuelve la letra de unidad actual del sistema.
 
-(define get-current-drive-system (lambda (system)(car(reverse system))))
+(define get-current-drive-system (lambda (system)(cadr(reverse system))))
+
+(define get-papelera-system(lambda(system)(car(reverse system))))
 
 ;Nombre del modificador: set-nombre-system
 ;Dominio: system-nombre, nombre
@@ -77,7 +80,7 @@
 ;ruta-system, fecha-system, logeado-system y current-drive-system que system-nombre, pero con el nombre cambiado a nombre.
 
 (define set-nombre-system (lambda (system-nombre nombre)(make-system nombre (get-drive-system system-nombre) (get-usuarios-system system-nombre)
-                 (get-ruta-system system-nombre) (get-fecha-system system-nombre) (get-logeado-system system-nombre)(get-current-drive-system system))))
+                 (get-ruta-system system-nombre) (get-fecha-system system-nombre) (get-logeado-system system-nombre)(get-current-drive-system system)(get-papelera-system system))))
 
 ;Nombre del modificador: set-drive-system
 ;Dominio: system y drive
@@ -85,9 +88,9 @@
 ;Descripción: Esta función toma un sistema system y un drive drive como argumentos, y devuelve un nuevo sistema que tiene la lista de unidades actualizada.
 
 (define set-drive-system(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (get-ruta-system system)
-                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))))
 (define set-drive-system2(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (string-append(string(car(get-current-drive-system system))) ":/")
-                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))))
 
 ;Nombre del modificador: set-usuarios-system
 ;Dominio: system
@@ -95,7 +98,7 @@
 ;Descripción: Esta función toma un sistema system y una lista de usuarios como argumentos, y devuelve un nuevo sistema con la lista de usuarios actualizada.
 
 (define set-usuarios-system(lambda (system usuarios)(make-system (get-nombre-system system) (get-drive-system system) usuarios (get-ruta-system system)
-                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))))
 
 ;Nombre del modificador: set-ruta-system
 ;Dominio: system
@@ -103,7 +106,7 @@
 ;Descripción: Esta función toma un sistema system y una ruta como argumentos y devuelve un nuevo sistema con la ruta actualizada.
 
 (define set-ruta-system(lambda (system ruta)(make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) ruta
-                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system))))
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))))
 
 ;Nombre del modificador: set-fecha-system
 ;Dominio: system
@@ -112,14 +115,17 @@
 ;La función accede a la fecha actual del sistema mediante el selector get-fecha-system y reemplaza su valor por el nuevo valor pasado como argumento.
 
 (define set-fecha-system(lambda (system fecha)(make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) (get-ruta-system system)
-                 fecha (get-logeado-system system)(get-current-drive-system system))))
+                 fecha (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))))
 
 (define set-logeado(lambda (system user)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)(get-ruta-system system)
-                 (get-fecha-system system)user(get-current-drive-system system))))
+                 (get-fecha-system system)user(get-current-drive-system system)(get-papelera-system system))))
                  
 
 (define set-current-drive(lambda (system current-drive)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)(get-ruta-system system)
-                 (get-fecha-system system)(get-logeado-system system) current-drive)))
+                 (get-fecha-system system)(get-logeado-system system) current-drive(get-papelera-system system))))
+
+(define set-papelera(lambda (system basura)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)(get-ruta-system system)
+                 (get-fecha-system system)(get-logeado-system system) (get-current-drive-system system)(cons basura (get-papelera-system system)))))
 
 
 
@@ -131,7 +137,7 @@
 ;Descripción: Esta función toma un nombre como argumento y devuelve un sistema vacío con ese nombre.
 ; El sistema vacío no tiene drives, usuarios, ruta actual, fecha actual, usuario logeado o unidad de drive actual.
 (define (system nombre)
-  (make-system nombre '() '() "" (fecha-actual) '() null ))
+  (make-system nombre '() '() "" (fecha-actual) '() null '()))
 
 ;Nombre de la función: run
 ;Dominio: sistema X comando
@@ -165,7 +171,8 @@
                        (get-logeado-system system)
                        (if(null? (get-current-drive-system system))
                           (list (char-upcase letra))
-                          (get-current-drive-system system)))
+                          (get-current-drive-system system))
+                       (get-papelera-system system))
           system))))
 
 
@@ -177,7 +184,7 @@
 ; Si el nombre de usuario ya existe en el sistema, devuelve el mismo sistema sin cambios.
 ; Si el nombre de usuario no existe en el sistema, crea un nuevo usuario con el nombre especificado y lo agrega a la lista de usuarios del sistema.
 ; Devuelve el sistema actualizado con el nuevo usuario agregado.
-(define Register
+(define register
   (lambda (system)
     (lambda (name-user)
       (if (member name-user (map car (get-usuarios-system system)))
@@ -188,7 +195,8 @@
                        (get-ruta-system system)
                        (fecha-actual)
                        (get-logeado-system system)
-                       (get-current-drive-system system))))))
+                       (get-current-drive-system system)
+                       (get-papelera-system system))))))
 
 
 
@@ -248,23 +256,11 @@
                            (string-append (string-upcase(string drive))":/")
                            (get-fecha-system system)
                            (get-logeado-system system)
-                           (currentdrive drive))
-              
-              (make-system (get-nombre-system system)
-                           (get-drive-system system)
-                           (get-usuarios-system system)
-                           (get-ruta-system system)
-                           (get-fecha-system system)
-                           (get-logeado-system system)
-                           (get-current-drive-system system)))
+                           (currentdrive drive)
+                           (get-papelera-system system))
+              system)
           
-              (make-system (get-nombre-system system)
-                           (get-drive-system system)
-                           (get-usuarios-system system)
-                           (get-ruta-system system)
-                           (get-fecha-system system)
-                           (get-logeado-system system)
-                           (get-current-drive-system system))))))
+              system))))
 
 ;Nombre de la función: md (make directory)
 ;Dominio: system X name (string)
@@ -303,7 +299,7 @@
                    (set-ruta-system system (cdpunto (get-ruta-system system)))
                    (if(ispath? system nuevaruta)
                       (make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) (string-upcase nuevaruta)
-                                   (get-fecha-system system) (get-logeado-system system)(list(string-ref (car (string-split nuevaruta ":"))0)))
+                                   (get-fecha-system system) (get-logeado-system system)(list(string-ref (car (string-split nuevaruta ":"))0))(get-papelera-system system))
                       (if (SyMDrive2 system (string (car (get-current-drive-system system))) nuevaruta)
                           (set-ruta-system system (string-append (get-ruta-system system) (string-upcase nuevaruta) "/"))               
                        system))))          
@@ -323,35 +319,12 @@
 
 
 
-
-
-
-
-
-
-
-; Nombre de la función: del
-; Dominio: system X condicion
-; Recorrido: contenido del sistema
-; Recursión: ninguna
-; Descripción: Esta función toma un sistema 'system' como argumento y devuelve una función anónima que toma una condición 'condicion'.
-;              Si la ruta del sistema no está vacía, verifica si la condición es "*.*".
-;              Si es así, establece el drive actual del sistema en la lista de drives del sistema utilizando 'SyMDrive4'.
-;              Si la condición es una carpeta, elimina la carpeta utilizando 'SyMDrive5'.
-;              Si la condición es un archivo, elimina el archivo utilizando 'SyMDrive6'.
-;              Si la ruta del sistema está vacía, devuelve el sistema sin cambios.
 (define del
   (lambda (system)
-    (lambda(condicion)
-      (if(not (null? (get-ruta-system system)))
-         (if(equal? "*.*" condicion)
-            (set-drive-system system (SyMDrive4 system))
-            (if(equal? (length (string-split condicion "."))1)
-               (set-drive-system2 system (SyMDrive5 system (string-upcase condicion)));significa que es una carpeta ,elimino carpeta
-               (if(equal? (length(string-split condicion "."))2)
-                  (set-drive-system system (SyMDrive6 system (string-upcase condicion)));significa que es un file, elimino file
-                  system)))
-         system))))
+    (lambda (condicion)
+      (del2 (set-papelera system (buscarcopia system condicion)) condicion))))
+
+
 
 ; Nombre de la función: rd
 ; Dominio: system X carpera(string)
@@ -393,7 +366,7 @@
   (lambda (system)
     (lambda (letra nombre)
       (make-system (get-nombre-system system) (buscarformat system letra nombre) (get-usuarios-system system) (get-ruta-system system)
-                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)))))
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system)))))
 
 
 
@@ -478,7 +451,7 @@
 ; La función devuelve verdadero si la unidad drive está presente en la lista y falso en caso contrario.
 (define drive-Lista?
   (lambda(drive system)
-    (member drive (map car(get-drive-system system))))) 
+    (member (char-upcase drive) (map car(get-drive-system system))))) 
 
 
 
@@ -494,7 +467,7 @@
 
 (define set-logeado-path(lambda (system user)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)
                   (string-append (string(car (get-current-drive-system system)))":/")
-                 (get-fecha-system system)user(get-current-drive-system system))))
+                 (get-fecha-system system)user(get-current-drive-system system)(get-papelera-system system))))
 
 
 ;Nombre de la función: SyMDrive
@@ -1045,6 +1018,29 @@
                  (buscar (cdr folders)(append lista(list(car folders))))))))
     (buscar (get-contenido-drive drive) '())))
 
+; Nombre de la función: del
+; Dominio: system X condicion
+; Recorrido: contenido del sistema
+; Recursión: ninguna
+; Descripción: Esta función toma un sistema 'system' como argumento y devuelve una función anónima que toma una condición 'condicion'.
+;              Si la ruta del sistema no está vacía, verifica si la condición es "*.*".
+;              Si es así, establece el drive actual del sistema en la lista de drives del sistema utilizando 'SyMDrive4'.
+;              Si la condición es una carpeta, elimina la carpeta utilizando 'SyMDrive5'.
+;              Si la condición es un archivo, elimina el archivo utilizando 'SyMDrive6'.
+;              Si la ruta del sistema está vacía, devuelve el sistema sin cambios.
+
+(define del2
+  (lambda (system condicion)
+      (if(not (null? (get-ruta-system system)))
+         (if(equal? "*.*" condicion)
+            (set-drive-system system (SyMDrive4 system))
+            (if(equal? (length (string-split condicion "."))1)
+               (set-drive-system2 system (SyMDrive5 system (string-upcase condicion)));significa que es una carpeta ,elimino carpeta
+               (if(equal? (length(string-split condicion "."))2)
+                  (set-drive-system system (SyMDrive6 system (string-upcase condicion)));significa que es un file, elimino file
+                  system)))
+         system)))
+
 
 
 (define move
@@ -1052,9 +1048,9 @@
     (lambda (archivomov rutamov)
       (let ((copy-fn (copy system)))
         (let ((new-system (copy-fn archivomov rutamov)))
-          (let ((del-fn (del new-system)))
-            (let ((final-system (del-fn archivomov)))
-              final-system))))))) 
+          (let ((final-system (del2 new-system archivomov)))
+            final-system)))))) 
+ 
 
 
 
