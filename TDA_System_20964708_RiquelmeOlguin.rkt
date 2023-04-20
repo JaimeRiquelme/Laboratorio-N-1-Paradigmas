@@ -354,6 +354,23 @@
          (set-drive-system system (SyMDrive11 system ruta nombrecopia 1 ))
          (set-drive-system system (SyMDrive11 system ruta nombrecopia 2))))))
 
+;Nombre de la función: move
+;Dominio: system X nombre X ruta
+;Recorrido: sistema actualizado
+;Recursión: ninguna
+;Descripción: Esta función toma un sistema system, un nombre de archivo y una ruta.
+; utiliza la funcion copy para copiar el archivo a la ruta donde se desea mover,
+;y posteriormente elimina el archivo de la ruta donde se econtraba utilizando la funcion del2
+
+
+(define move
+  (lambda (system)
+    (lambda (archivomov rutamov)
+      (let ((copy-fn (copy system)))
+        (let ((new-system (copy-fn archivomov rutamov)))
+          (let ((final-system (del2 new-system archivomov)))
+            final-system)))))) 
+
 ;Nombre de la función: format
 ;Dominio: system X letra X nombre
 ;Recorrido: sistema actualizado
@@ -1043,13 +1060,7 @@
 
 
 
-(define move
-  (lambda (system)
-    (lambda (archivomov rutamov)
-      (let ((copy-fn (copy system)))
-        (let ((new-system (copy-fn archivomov rutamov)))
-          (let ((final-system (del2 new-system archivomov)))
-            final-system)))))) 
+
  
 
 
