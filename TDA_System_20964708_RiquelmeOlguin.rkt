@@ -137,7 +137,9 @@
 ;Descripción: Esta función toma un nombre como argumento y devuelve un sistema vacío con ese nombre.
 ; El sistema vacío no tiene drives, usuarios, ruta actual, fecha actual, usuario logeado o unidad de drive actual.
 (define (system nombre)
-  (make-system nombre '() '() "" (fecha-actual) '() null '()))
+  (if(string? nombre)
+  (make-system nombre '() '() "" (fecha-actual) '() null '())
+  #f))
 
 ;Nombre de la función: run
 ;Dominio: sistema X comando
@@ -160,20 +162,23 @@
 (define add-drive
   (lambda (system)
     (lambda (letra nombre capacidad)
-      (if (not (member letra (map car (get-drive-system system))))
-          (make-system (get-nombre-system system)
-                       (cons (drive letra nombre capacidad) (get-drive-system system))
-                       (get-usuarios-system system)
-                       (if (null? (get-drive-system system))
-                           (string-append (string-upcase(string letra))":/" (get-ruta-system system))
-                           (get-ruta-system system))
-                       (get-fecha-system system)
-                       (get-logeado-system system)
-                       (if(null? (get-current-drive-system system))
-                          (list (char-upcase letra))
-                          (get-current-drive-system system))
-                       (get-papelera-system system))
+      (if (and (char? letra) (string? nombre) (number? capacidad))
+          (if (not (member (char-upcase letra) (map car (get-drive-system system))))
+              (make-system (get-nombre-system system)
+                           (cons (drive (char-upcase letra) nombre capacidad) (get-drive-system system))
+                           (get-usuarios-system system)
+                           (if (null? (get-drive-system system))
+                               (string-append (string-upcase (string letra)) ":/" (get-ruta-system system))
+                               (get-ruta-system system))
+                           (get-fecha-system system)
+                           (get-logeado-system system)
+                           (if (null? (get-current-drive-system system))
+                               (list (char-upcase letra))
+                               (get-current-drive-system system))
+                           (get-papelera-system system))
+          system)
           system))))
+
 
 
 
@@ -187,16 +192,18 @@
 (define register
   (lambda (system)
     (lambda (name-user)
-      (if (member name-user (map car (get-usuarios-system system)))
+      (if(string? name-user)
+      (if (member (string-upcase name-user) (map car (get-usuarios-system system)))
           system
           (make-system (get-nombre-system system)
                        (get-drive-system system)
-                       (append (get-usuarios-system system) (list (make-user name-user)))
+                       (append (get-usuarios-system system) (list (make-user (string-upcase name-user))))
                        (get-ruta-system system)
                        (fecha-actual)
                        (get-logeado-system system)
                        (get-current-drive-system system)
-                       (get-papelera-system system))))))
+                       (get-papelera-system system)))
+      system))))
 
 
 
@@ -215,11 +222,13 @@
 (define login
   (lambda (system)
     (lambda (name-user)
-      (if (member name-user (map car (get-usuarios-system system)))
-          (if (null? (get-logeado-system system))
-              (set-logeado system name-user)
-              system)
-          system))))
+      (if(string? name-user)
+         (if (member (string-upcase name-user) (map car (get-usuarios-system system)))
+             (if (null? (get-logeado-system system))
+                 (set-logeado system (string-upcase name-user))
+                 system)
+             system)
+         system))))
 
 
 ;Nombre de la función: logout
@@ -248,9 +257,10 @@
 (define switch-drive
   (lambda (system)
     (lambda (drive)
-      (if (drive-Lista? drive system)
-          (if (not (null? (get-logeado-system system)))
-              (make-system (get-nombre-system system)
+      (if(char? drive)
+         (if (drive-Lista? drive system)
+             (if (not (null? (get-logeado-system system)))
+                 (make-system (get-nombre-system system)
                            (get-drive-system system)
                            (get-usuarios-system system)
                            (string-append (string-upcase(string drive))":/")
@@ -258,9 +268,10 @@
                            (get-logeado-system system)
                            (currentdrive drive)
                            (get-papelera-system system))
-              system)
+                 system)
           
-              system))))
+              system)
+         system))))
 
 ;Nombre de la función: md (make directory)
 ;Dominio: system X name (string)
@@ -272,8 +283,10 @@
 (define md
   (lambda (system)
     (lambda(nombre)
+      (if(string? nombre)
       (set-drive-system system (SyMDrive system (string (car (get-current-drive-system system)))
-                                         (string-upcase nombre))))))
+                                         (string-upcase nombre)))
+      system))))
 
 
 
@@ -292,18 +305,20 @@
 (define cd
   (lambda (system)
     (lambda (nuevaruta)
-      (if (not (null? (get-ruta-system system)))
+      (if(string? nuevaruta)
+         (if (not (null? (get-ruta-system system)))
              (if(equal? "/" nuevaruta)
                 (set-ruta-system system (string-append (string (car(get-current-drive-system system))) ":/" ))
                 (if(equal? ".." nuevaruta)
-                   (set-ruta-system system (cdpunto (get-ruta-system system)))
+                   (set-ruta-system system (cdpunto system (get-ruta-system system)))
                    (if(ispath? system nuevaruta)
                       (make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) (string-upcase nuevaruta)
                                    (get-fecha-system system) (get-logeado-system system)(list(string-ref (car (string-split nuevaruta ":"))0))(get-papelera-system system))
                       (if (SyMDrive2 system (string (car (get-current-drive-system system))) nuevaruta)
                           (set-ruta-system system (string-append (get-ruta-system system) (string-upcase nuevaruta) "/"))               
-                       system))))          
-          system))))
+                          system))))          
+             system)
+         system))))
 
 ;Nombre de la función: add-file
 ;Dominio: system X filecreado
@@ -314,7 +329,9 @@
 (define add-file
   (lambda (system)
     (lambda (filecreado)
-      (set-drive-system system (SyMDrive3 system filecreado )))))
+      (if(equal? filecreado #f)
+         system
+      (set-drive-system system (SyMDrive3 system filecreado ))))))
 
 
 
@@ -322,7 +339,13 @@
 (define del
   (lambda (system)
     (lambda (condicion)
-      (del2 (set-papelera system (buscarcopia system condicion)) condicion))))
+      (if(string? condicion)
+         (let ((copia (buscarcopia system condicion)))
+           (if (equal? copia #f)
+               system
+               (del2 (set-papelera system (buscarcopia system condicion)) condicion)))
+         system))))
+
 
 
 
@@ -382,8 +405,10 @@
 (define format
   (lambda (system)
     (lambda (letra nombre)
-      (make-system (get-nombre-system system) (buscarformat system letra nombre) (get-usuarios-system system) (get-ruta-system system)
-                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system)))))
+      (if(and(char? letra)(string? nombre))
+         (make-system (get-nombre-system system) (buscarformat system letra nombre) (get-usuarios-system system) (get-ruta-system system)
+                 (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))
+         system))))
 
 
 
@@ -398,6 +423,7 @@
 ; La función devuelve el archivo creado.
 (define file
   (lambda (nombre extencion contenido . seguridad)
+    (if(and(string? nombre)(string? extencion)(string? contenido).(char? seguridad))
       (let ((fecha (fecha-actual)))
         (make-folder (string-upcase nombre)
                      extencion
@@ -408,7 +434,8 @@
                      null
                      null
                      seguridad                   
-                     null))))
+                     null))
+      #f)))
 
 ;Nombre de la función: folder
 ;Dominio: system X name (string)
@@ -558,8 +585,10 @@
 ; Utiliza reverse para invertir el orden de la lista, elimina el último elemento (que corresponde al nombre del directorio actual) utilizando cdr, y vuelve a invertir la lista y la convierte en una cadena de caracteres utilizando string-join.
 ; Finalmente, utiliza string-append para agregar una barra diagonal al final de la ruta y devuelve la ruta actualizada a la ruta anterior (subiendo un nivel).
 (define cdpunto
-  (lambda (string)
-    (string-append(string-join (reverse(cdr(reverse(string-split string "/")))) "/")"/")))
+  (lambda (system string)
+    (if(not(esraiz? system string))
+    (string-append(string-join (reverse(cdr(reverse(string-split string "/")))) "/")"/")
+    string)))
 
 
 
@@ -651,8 +680,10 @@
         (if(null? folders)
            lista
            (if(equal? (get-nombre-folder(car folders))(carpetactual system))
+              (if(not(member (get-nombre-file filecreado) (map get-nombre-file(get-contenido-folder (car folders)))))
                  (buscar (cdr folders)(append lista(list(set-contenido-folder (car folders) filecreado))))
-                 (buscar (cdr folders)(append lista(list(car folders))))))))
+                 (buscar (cdr folders)(append lista(list(car folders)))))
+              (buscar (cdr folders)(append lista(list(car folders))))))))
     (buscar (get-contenido-drive drive) '())))
 
 
