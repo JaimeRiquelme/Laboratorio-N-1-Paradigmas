@@ -4,6 +4,7 @@
 (require "TDA_Folder_20964708_RiquelmeOlguin.rkt")
 (require "TDA_Drive_20964708_RiquelmeOlguin.rkt")
 (require "TDA_User_20964708_RiquelmeOlguin.rkt")
+(require "TDA_File_20964708_RiquelmeOlguin.rkt")
 
 ;creando un sistema
 (define S0 (system "newSystem"))
@@ -135,22 +136,50 @@
 (define S40a ((run S40 del) "folder1"));Se intenta eliminar un folder que no existe, por lo cual no añade nada a papelera.
 (define S40b ((run S40 del) "FoLdEr2"));Se elimina la carpeta folder2 , ingresando el nombre comprobando el case sensitive.
 (define S40c ((run S40 del) #\C));se ingresa un drive como nombre a eliminar, como no es un nombre de folder o file, este no realiza ningun cambio.
-
-
+(define S40d ((run S40 cd) "/"));vuelve a la raiz
+(define S40e ((run S40 del) "*.*"));elimina todo el contenido del drive posicionado. (no es un format ya que no se actualiza el nombre)
+;_____________________________________________________________________________________________________
 ;borrando una carpeta
 (define S41 ((run S39 rd) "folder1"))  ;no debería borrarla, pues tiene archivos
 (define S42 ((run S41 cd) "folder1"))
 (define S43 ((run S42 del) "*.*"))
 (define S44 ((run S43 cd) ".."))
 (define S45 ((run S44 rd) "folder1"))
+
+(define S45a ((run S45 rd) "folder1"));intento de eliminar un archivo inexistente, no realiza ningun cambio ya que este no existe.
+(define S45b ((run S45 rd) #\C));intento de eliminar un archivo de nombre char, no realiza ningun cambio ya que se debe ingresar un nombre valido.
+(define S45c ((run S40 cd) "C:/FOLDER2/FOLDER21/"))
+(define S45d ((run S45 rd) "FoLdEr211"));se elimina la carpeta Folder221, contenida dentro de folder21, ingresando el nombre en mayuscula y minuscula para probar el case sensitive.
+
+
+
 ;copiando carpetas y archivos
 (define S46 ((run S35 copy) "foo1.txt" "c:/folder3/"))
 (define S47 ((run S46 cd) ".."))
 (define S48 ((run S47 copy) "folder1" "d:/"))
+
+(define S48a ((run S35 copy) "foo12.txt" "c:/folder3/"));se intenta copiar una carpeta inexistente.
+(define S48b ((run S48a copy) "foo1.txt" "c:/"));se copia un file en la raiz C.
+(define S48c ((run S48b copy) "foo1.txt" "folder3"));se intenta copiar un file, ingresando un nombre en la direccion en vez de una ruta especifica.
+(define S48e ((run S48c copy) 12345 "d:/"));se ingresa un nombre erroneo en este caso un int, en lugar de un string que deberia ser el nombre del archivo a copiar.
+
 ;moviendo carpetas y archivos
 (define S49 ((run S48 move) "folder3" "d:/"))
 (define S50 ((run S49 cd) "folder1"))
 (define S51 ((run S50 move) "foo3.docx" "d:/folder3/"))
+
+(define S51a ((run S51 move) "foo3.docx" "d:/folder3/"));se intenta mover nuevamente el archivo a la ruta especificada, en esta instancia el archivo ya no existe en la ruta actual, por lo cual no deberia mover nada.
+(define S51b ((run S51a move) "ARRCHIVO4.docx" "d:/"));se intenta mover un archivo inexistente a la direccion de la raiz de D.
+(define S51c ((run S51b move) #\C "d:/"));se ingresa un char en lugar del nombre del archivo a mover, este no deberia realizar ningun cambio.
+(define S51d ((run S51c move) "foo3.docx" "folder2")); se ingresa el nombre de un folder en lugar de la ruta destino. no deberia realizar cambios.
+
+
+;renombrando carpetas y archivos
+(define S52 ((run S51 ren) "foo1.txt" "newFoo1.txt"))
+(define S53 ((run S52 ren) "foo2.txt" "newFoo1.txt")) ;no debería efectuar cambios pues ya existe archivo con este nombre
+(define S54 ((run S53 cd) ".."))
+(define S55 ((run S54 ren) "folder1" "newFolder1"))
+
 
 
 ;--------------------------------- Scrip de prueba adicional--------------------------------------------------------------
