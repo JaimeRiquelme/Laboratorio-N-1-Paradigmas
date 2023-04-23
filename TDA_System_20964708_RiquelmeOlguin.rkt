@@ -1103,7 +1103,11 @@
          system)))
 
 
-
+; Nombre de la función: delcontenidodrive
+; Dominio: system
+; Recorrido: lista de drives actualizada
+; Recursión: recursion de cola
+; Descripción: Elimina el contenido del drive actual en el sistema 'system' y devuelve la lista de drives actualizada.
 
  (define delcontenidodrive
   (lambda (system)
@@ -1118,12 +1122,34 @@
 
 ;-----
 
+; Nombre de la función: ren
+; Dominio: system, nombrecarpeta, nuevonombre
+; Recorrido: sistema actualizado
+; Recursión: no recursiva
+; Descripción: Renombra una carpeta o archivo en el sistema 'system' según el nombre actual 'nombrecarpeta' y el nuevo nombre 'nuevonombre'.
+;              Si 'nombrecarpeta' y 'nuevonombre' son cadenas, la función verifica si la ruta del sistema es la raíz.
+;              Si es la raíz, busca y renombra la carpeta usando 'buscardriverename'.
+;              Si no es la raíz, busca y renombra el archivo usando 'buscardriverename'.
+;              Si 'nombrecarpeta' o 'nuevonombre' no son cadenas, devuelve el sistema sin cambios.
+
 (define ren
   (lambda(system)
     (lambda(nombrecarpeta nuevonombre)
-      (if(esraiz? system (get-ruta-system system))
-         (set-drive-system system (buscardriverename system nombrecarpeta nuevonombre 1));modificar el nombre al folder
-         (set-drive-system system (buscardriverename system nombrecarpeta nuevonombre 2))))));modificar el nombre al file
+      (if(and(string? nombrecarpeta)(string? nuevonombre))
+         (if(esraiz? system (get-ruta-system system))
+            (set-drive-system system (buscardriverename system nombrecarpeta nuevonombre 1));modificar el nombre al folder
+            (set-drive-system system (buscardriverename system nombrecarpeta nuevonombre 2)));modificar el nombre al file
+         system))))
+
+; Nombre de la función: buscardriverename
+; Dominio: system, nombrefolder, nuevonombre, opcion
+; Recorrido: lista de drives actualizada
+; Recursión: recursion de cola
+; Descripción: Busca y renombra una carpeta o archivo en el sistema 'system', dado el nombre actual 'nombrefolder', el nuevo nombre 'nuevonombre' y la opción 'opcion'.
+;              La función auxiliar 'buscador' recorre la lista de drives y compara la letra del drive con la letra del drive actual del sistema.
+;              Si las letras coinciden, se crea una nueva lista con el contenido del drive actualizado, utilizando las funciones 'buscarfolderrename1' o 'buscarfolderrename2'.
+;              La función 'buscador' se llama recursivamente hasta que todos los drives hayan sido procesados.
+;              Finalmente, devuelve la lista de drives actualizada.
 
 (define buscardriverename
   (lambda (system nombrefolder nuevonombre opcion)
@@ -1139,6 +1165,11 @@
     (buscador (cadr system) '())))
 
 
+; Nombre de la función: buscarfolderrename2
+; Dominio: system, drive, nombrefolder, nuevonombre
+; Recorrido: lista de carpetas actualizada
+; Recursión: recursion de cola
+; Descripción: Busca y renombra un archivo dentro de una carpeta específica en el 'drive' dado, según el nombre actual 'nombrefolder' y el nuevo nombre 'nuevonombre'.
 (define buscarfolderrename2
   (lambda(system drive nombrefolder nuevonombre)
     (define buscar
@@ -1149,6 +1180,12 @@
                (buscar (cdr folders)(append lista (list(set-contenido-folder2 (car folders) (buscarfilerename system (car folders) nombrefolder nuevonombre)))))
               (buscar (cdr folders)(append lista(list(car folders))))))))
     (buscar (get-contenido-drive drive) '())))
+
+; Nombre de la función: buscarfolderrename1
+; Dominio: system, drive, nombrefolder, nuevonombre
+; Recorrido: lista de carpetas actualizada
+; Recursión: recursion de cola
+; Descripción: Busca y renombra una carpeta en el 'drive' dado, según el nombre actual 'nombrefolder' y el nuevo nombre 'nuevonombre'.
 
 (define buscarfolderrename1
   (lambda(system drive nombrefolder nuevonombre)
@@ -1163,8 +1200,12 @@
            folders)))
     (buscar (get-contenido-drive drive) '())))
 
-
-(define buscarfilerename ;symfile
+; Nombre de la función: buscarfilerename
+; Dominio: system, folder, nombrefile, nuevonombre
+; Recorrido: lista de archivos actualizada
+; Recursión: recursion de cola
+; Descripción: Busca y renombra un archivo en la 'folder' dada, según el nombre actual 'nombrefile' y el nuevo nombre 'nuevonombre'.
+(define buscarfilerename 
   (lambda (system folder nombrefile nuevonombre)
     (define buscar2
       (lambda(files lista)
@@ -1180,6 +1221,42 @@
 
 
 
+(define (dir system)
+  (define (inner-dir args)
+    (if (null? args)
+        (alistaractual system)
+        args))
+  (inner-dir '()))
+
+(define alistaractual
+  (lambda (system)
+    (if(esraiz? system (get-ruta-system system))
+            (buscardrivelistar system 1);modificar el nombre al folder
+            (buscardrivelistar system 2))));modificar el nombre al file))
 
 
+
+(define buscardrivelistar
+  (lambda (system opcion)
+    (define buscador
+      (lambda (drives)
+        (if (null? drives)
+            system
+            (if (equal? (string (get-letra-drive (car drives))) (string(car(get-current-drive-system system))))
+                (if(equal? opcion 1)
+                   (listarfolders system (car drives))
+                   #f)
+                (buscador (cdr drives))))))
+    (buscador (cadr system))))
+
+(define listarfolders
+  (lambda(system drive)
+    (define buscar
+      (lambda(folders lista)
+           (if(null? folders)
+              lista
+              (if(equal? (get-ruta-system system)(get-ubicacion-folder(car folders)))
+                 (buscar (cdr folders)(string-append lista "\n" (get-nombre-folder (car folders))))
+                 (buscar (cdr folders))))))              
+    (buscar (get-contenido-drive drive) "")))
   

@@ -109,7 +109,7 @@
 
 
 
-(define get-ubicacion-folder(lambda (folder)(cddddr (cddddr folder))))
+(define get-ubicacion-folder(lambda (folder)(car (reverse folder))))
 
 ;---------------------------modificadores---------------------------
 
