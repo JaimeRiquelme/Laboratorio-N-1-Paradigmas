@@ -340,10 +340,10 @@
   (lambda (system)
     (lambda (condicion)
       (if(string? condicion)
-         (let ((copia (buscarcopia system condicion)))
+         (let ((copia (buscarcopia system condicion (get-ruta-system system))))
            (if (equal? copia #f)
                system
-               (del2 (set-papelera system (buscarcopia system condicion)) condicion)))
+               (del2 (set-papelera system (buscarcopia system condicion (get-ruta-system system))) condicion)))
          system))))
 
 
@@ -473,9 +473,11 @@
 
 (define ispath?
   (lambda (system path)
+    (if(string? path)
       (if (member (string-upcase(car (string-split path ":"))) (map string-upcase(map string (map car (get-drive-system system)))))
           #t
-          #f)))
+          #f)
+      #f)))
 
 ;Nombre de la función: fecha-actual
 ;Dominio: ningún argumento
@@ -940,13 +942,13 @@
 
 
 (define buscarcopia 
-  (lambda (system nombrecopia)
+  (lambda (system nombrecopia ruta)
     (define buscador
       (lambda (drives nombrecopia)
         (if (null? drives)
             #f
             (if (equal? (string (get-letra-drive (car drives))) (string (car (get-current-drive-system system))))
-                (copia system (car drives) nombrecopia)
+                (copia system (car drives) nombrecopia ruta)
                 (buscador (cdr drives) nombrecopia)))))
     (buscador (cadr system) nombrecopia)))
 
@@ -959,11 +961,11 @@
 ;              Devuelve el resultado de la función buscarfolder2, que puede ser un folder, un archivo o null.
 
 (define copia
-  (lambda (system drive nombrecopia)
+  (lambda (system drive nombrecopia ruta)
     (if (equal? (length (string-split nombrecopia ".")) 1)
-        (buscarfolder2 system (get-contenido-drive drive) (string-upcase nombrecopia) 1)
+        (buscarfolder2 system (get-contenido-drive drive) (string-upcase nombrecopia) 1 ruta ) 
         (if (equal? (length (string-split nombrecopia ".")) 2)
-            (buscarfolder2 system (get-contenido-drive drive) (string-upcase nombrecopia) 2)
+            (buscarfolder2 system (get-contenido-drive drive) (string-upcase nombrecopia) 2 ruta)
             null))))
 
 ; Nombre de la función: buscarfolder2
@@ -977,21 +979,21 @@
 
 
 (define buscarfolder2
-  (lambda (system folders nombre opcion)
+  (lambda (system folders nombre opcion ruta)
     (if (equal? opcion 1)
         (if (null? folders)
             #f
             (let ((folder (car folders)))
               (if (equal? (get-nombre-folder folder) nombre)
-                  folder
-                  (buscarfolder2 system (cdr folders) nombre 1))))
+                  (set-ubicacion-folder folder (string-upcase ruta))
+                  (buscarfolder2 system (cdr folders) nombre 1 ruta)))) 
         (if (equal? opcion 2)
             (if (null? folders)
                 '()
                 (let ((folder (car folders)))
                   (if (equal? (get-nombre-folder folder) (carpetactual system))
-                      (buscarfile (get-contenido-folder folder) nombre)
-                      (buscarfolder2 system (cdr folders) nombre 2))))
+                      (buscarfile (get-contenido-folder folder) nombre ruta) 
+                      (buscarfolder2 system (cdr folders) nombre 2 ruta)))) 
             null))))
 
 ; Nombre de la función: buscarfile
@@ -1004,13 +1006,13 @@
 
 
 (define buscarfile
-  (lambda (files nombre)
+  (lambda (files nombre ruta)
     (if (null? files)
         #f
         (let ((archivo (car files)))
           (if (equal? (get-nombre-file archivo) nombre)
               archivo
-              (buscarfile (cdr files) nombre))))))
+              (buscarfile (cdr files) nombre ruta ))))))
 
 ; Nombre de la función: ubicacioncopia
 ; Dominio: ruta
@@ -1043,11 +1045,11 @@
             lista
             (if (equal? (string (get-letra-drive (car drives))) (string-upcase (car (string-split ubicacion ":"))))
                 (if (equal? opcion 1)
-                    (let ((buscar-copia (buscarcopia system nombrecopia)))
+                    (let ((buscar-copia (buscarcopia system nombrecopia ubicacion)))
                       (if (equal? #f buscar-copia)
                           (buscador (cdr drives)(append lista(list(car drives))))
                           (buscador (cdr drives) (append lista (list (set-contenido-drive buscar-copia (car drives)))))))
-                    (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder6 system (ubicacioncopia ubicacion) nombrecopia (car drives)) (car drives))))))
+                    (buscador (cdr drives) (append lista (list (set-contenido-drive2 (SyMFolder6 system ubicacion nombrecopia (car drives)) (car drives))))))
                 (buscador (cdr drives) (append lista (list (car drives))))))))
     (buscador (cadr system) '())))
 
@@ -1069,10 +1071,10 @@
       (lambda (folders lista)
         (if (null? folders)
             lista
-            (if (equal? (get-nombre-folder (car folders)) direcopia)
-                (if (equal? #f (buscarcopia system nombrecopia))
+            (if (equal? (get-nombre-folder (car folders)) (ubicacioncopia direcopia))
+                (if (equal? #f (buscarcopia system nombrecopia direcopia)) 
                     (buscar (cdr folders) (append lista (list (car folders))))
-                    (buscar (cdr folders) (append lista (list (set-contenido-folder (car folders) (buscarcopia system nombrecopia))))))
+                    (buscar (cdr folders) (append lista (list (set-contenido-folder (car folders) (buscarcopia system nombrecopia direcopia))))))
                 (buscar (cdr folders) (append lista (list (car folders))))))))
     (buscar (get-contenido-drive drive) '())))
 
@@ -1221,18 +1223,19 @@
 
 
 
-(define (dir system)
-  (define (inner-dir args)
-    (if (null? args)
-        (alistaractual system)
-        args))
-  (inner-dir '()))
+(define dir
+  (lambda (system)
+    (define (inner-dir args)
+      (if (null? args)
+          (alistaractual system)
+          args))
+    (inner-dir '())))
 
 (define alistaractual
   (lambda (system)
     (if(esraiz? system (get-ruta-system system))
             (buscardrivelistar system 1);modificar el nombre al folder
-            (buscardrivelistar system 2))));modificar el nombre al file))
+            (buscardrivelistar system 2))));modificar el nombre al file
 
 
 
@@ -1243,20 +1246,66 @@
         (if (null? drives)
             system
             (if (equal? (string (get-letra-drive (car drives))) (string(car(get-current-drive-system system))))
-                (if(equal? opcion 1)
-                   (listarfolders system (car drives))
-                   #f)
+                   (listarfolders system (car drives) opcion)
                 (buscador (cdr drives))))))
     (buscador (cadr system))))
 
 (define listarfolders
-  (lambda(system drive)
+  (lambda(system drive opcion)
     (define buscar
       (lambda(folders lista)
            (if(null? folders)
-              lista
+              (if(equal? opcion 1)
+                 lista
+                 (buscarfolderlistar system drive lista));aqui llamo a buscarfolder ubi actual que luego llama a listar file
               (if(equal? (get-ruta-system system)(get-ubicacion-folder(car folders)))
                  (buscar (cdr folders)(string-append lista "\n" (get-nombre-folder (car folders))))
-                 (buscar (cdr folders))))))              
+                 (buscar (cdr folders) lista)))))              
     (buscar (get-contenido-drive drive) "")))
+
+(define buscarfolderlistar
+  (lambda(system drive listacompleta)
+    (define buscar
+      (lambda(folders)
+        (if(null? folders)
+           listacompleta
+           (if(equal? (get-nombre-folder(car folders))(carpetactual system))                             
+              (buscarfilelistar system (car folders) listacompleta)
+              (buscar (cdr folders))))))
+    (buscar (get-contenido-drive drive))))
+
+(define buscarfilelistar 
+  (lambda (system folder listacompleta)
+    (define buscar2
+      (lambda(files lista)
+        (if(null? files)
+           (string-append lista listacompleta)          
+           (buscar2 (cdr files)(string-append lista "\n" (get-nombre-file (car files)))))))
+    (buscar2 (get-contenido-folder folder) "")))
+
+(define buscardrivelistar2
+  (lambda (system opcion)
+    (define buscador
+      (lambda (drives)
+        (if (null? drives)
+            system
+            (if (equal? (string (get-letra-drive (car drives))) (string(car(get-current-drive-system system))))
+                   (listarfolders system (car drives) opcion)
+                (buscador (cdr drives))))))
+    (buscador (cadr system))))
+
+(define listarfolders2
+  (lambda(system drive opcion)
+    (define buscar
+      (lambda(folders lista)
+           (if(null? folders)
+              (if(equal? opcion 1)
+                 lista
+                 (buscarfolderlistar system drive lista));aqui llamo a buscarfolder ubi actual que luego llama a listar file
+              (if(equal? (get-ruta-system system)(get-ubicacion-folder(car folders)))
+                 (buscar (cdr folders)(string-append lista "\n" (get-nombre-folder (car folders))))
+                 (buscar (cdr folders) lista)))))              
+    (buscar (get-contenido-drive drive) "")))
+
+  
   

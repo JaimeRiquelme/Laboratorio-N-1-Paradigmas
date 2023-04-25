@@ -90,8 +90,9 @@
 ;listando la información
 (display (run S16 dir))
 (display (run S55 dir))
-#|
-(display ((run S55 dir) "/s")) ;muestra carpetas y subcarpetas de la unidad C
+
+;(display ((run S55 dir) "/s"))
+#|;muestra carpetas y subcarpetas de la unidad C
 (display ((run S55 dir) "/s /a")) ;muestra todo el contenido de carpetas y subcarpetas de la unidad C incluyendo archivo oculto goo4.docx
 
 ;encriptando archivos y carpetas
