@@ -334,7 +334,7 @@
       (set-drive-system system (SyMDrive3 system filecreado ))))))
 
 
-
+;comentar esto
 
 (define del
   (lambda (system)
@@ -398,7 +398,26 @@
            (let ((new-system (copy-fn archivomov rutamov)))
              (let ((final-system (del2 new-system archivomov)))
                final-system)))
-         system)))) 
+         system))))
+
+; Nombre de la función: ren
+; Dominio: system, nombrecarpeta, nuevonombre
+; Recorrido: sistema actualizado
+; Recursión: no recursiva
+; Descripción: Renombra una carpeta o archivo en el sistema 'system' según el nombre actual 'nombrecarpeta' y el nuevo nombre 'nuevonombre'.
+;              Si 'nombrecarpeta' y 'nuevonombre' son cadenas, la función verifica si la ruta del sistema es la raíz.
+;              Si es la raíz, busca y renombra la carpeta usando 'buscardriverename'.
+;              Si no es la raíz, busca y renombra el archivo usando 'buscardriverename'.
+;              Si 'nombrecarpeta' o 'nuevonombre' no son cadenas, devuelve el sistema sin cambios.
+
+(define ren
+  (lambda(system)
+    (lambda(nombrecarpeta nuevonombre)
+      (if(and(string? nombrecarpeta)(string? nuevonombre))
+         (if(esraiz? system (get-ruta-system system))
+            (set-drive-system system (buscardriverename system nombrecarpeta nuevonombre 1));modificar el nombre al folder
+            (set-drive-system system (buscardriverename system nombrecarpeta nuevonombre 2)));modificar el nombre al file
+         system))))
 
 ;Nombre de la función: format
 ;Dominio: system X letra X nombre
@@ -1124,24 +1143,7 @@
 
 ;-----
 
-; Nombre de la función: ren
-; Dominio: system, nombrecarpeta, nuevonombre
-; Recorrido: sistema actualizado
-; Recursión: no recursiva
-; Descripción: Renombra una carpeta o archivo en el sistema 'system' según el nombre actual 'nombrecarpeta' y el nuevo nombre 'nuevonombre'.
-;              Si 'nombrecarpeta' y 'nuevonombre' son cadenas, la función verifica si la ruta del sistema es la raíz.
-;              Si es la raíz, busca y renombra la carpeta usando 'buscardriverename'.
-;              Si no es la raíz, busca y renombra el archivo usando 'buscardriverename'.
-;              Si 'nombrecarpeta' o 'nuevonombre' no son cadenas, devuelve el sistema sin cambios.
 
-(define ren
-  (lambda(system)
-    (lambda(nombrecarpeta nuevonombre)
-      (if(and(string? nombrecarpeta)(string? nuevonombre))
-         (if(esraiz? system (get-ruta-system system))
-            (set-drive-system system (buscardriverename system nombrecarpeta nuevonombre 1));modificar el nombre al folder
-            (set-drive-system system (buscardriverename system nombrecarpeta nuevonombre 2)));modificar el nombre al file
-         system))))
 
 ; Nombre de la función: buscardriverename
 ; Dominio: system, nombrefolder, nuevonombre, opcion

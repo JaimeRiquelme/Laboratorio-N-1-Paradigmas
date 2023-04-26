@@ -155,12 +155,13 @@
 (define S16b ((run S16 md) "FoLdEr1"));intenta crear una carpeta que ya existe, probando el case sensitive. no deberia crearla
 (define S16c ((run S16 md) 12345)); intenta crear una carpeta ingresando un entero en vez de un nombre valido.
 (define S16d ((run S16 md) "FoLdEr4"));crea una carpeta respetando que esta misma se cree en mayusculas.
+(define S16e ((run S17 md) "folder2"));crea una carpeta respetando que esta misma se cree en mayusculas.
 
 (define S26a ((run S26 cd) "/")); se utiliza el "/" ya estando en la raiz.
 (define S26b ((run S26 cd) ".."));intenta realizar un .. estando en la raiz. no deberia de actuar y seguir en la raiz.
 (define S26c ((run S26 cd) "FoLdEr2"));ingresa a folder 2 verificando que el sistema no es case sensitive.
 (define S26d ((run S26 cd) 12345));intenta ingresar un int, en vez de una ruta o un nombre.
-(define S26e ((run S26 cd) #\C));intenta ingresar un chat, en vez de una ruta o un nombre.
+(define S26e ((run S26 cd) #\C));intenta ingresar un char, en vez de una ruta o un nombre.
 
 (define S31a ((run S30 format) "D" "newD"));intenta formatear la unidad "D", pero no se puede ya que se debe ingresar el char.
 (define S31b ((run S30 format) #\D "NEWD2"));formatea por segunda vez la unidad D.
