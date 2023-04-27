@@ -9,7 +9,7 @@
 
 (define (make-file nombre extencion contenido-file fecha-creacion fecha-modificacion creador-user
                    compartidos-user tamaño seguridad ubicacion)
-  (list nombre contenido-file extencion fecha-creacion fecha-modificacion creador-user
+  (list nombre extencion contenido-file fecha-creacion fecha-modificacion creador-user
                    compartidos-user tamaño seguridad ubicacion))
 
 ;selectores
@@ -82,7 +82,7 @@
 ; Descripción: Esta función toma un archivo como argumento y devuelve su tamaño.
 
 
-(define get-tamaño-file(lambda (file)(cadddr(cddddr file))))
+(define get-tamano-file(lambda (file)(cadddr(cddddr file))))
 
 ; Nombre de la función: get-seguridad-file
 ; Dominio: file
@@ -120,7 +120,7 @@
                (get-fecha-modificacion-file file)
                (get-creador-user-file file)
                (get-compartidos-user-file file)
-               (get-tamaño-file file)
+               (get-tamano-file file)
                (get-seguridad-file file)
                (get-ubicacion-file file))))
 
@@ -140,7 +140,7 @@
                (get-fecha-modificacion-file file)
                (get-creador-user-file file)
                (get-compartidos-user-file file)
-               (get-tamaño-file file)
+               (get-tamano-file file)
                (get-seguridad-file file)
                (get-ubicacion-file file))))
 
@@ -159,7 +159,7 @@
                (get-fecha-modificacion-file file)
                (get-creador-user-file file)
                (get-compartidos-user-file file)
-               (get-tamaño-file file)
+               (get-tamano-file file)
                (get-seguridad-file file)
                (get-ubicacion-file file))))
 
@@ -178,7 +178,7 @@
                (get-fecha-modificacion-file file)
                (get-creador-user-file file)
                (get-compartidos-user-file file)
-               (get-tamaño-file file)
+               (get-tamano-file file)
                (get-seguridad-file file)
                (get-ubicacion-file file))))
 
@@ -197,7 +197,7 @@
                fecha
                (get-creador-user-file file)
                (get-compartidos-user-file file)
-               (get-tamaño-file file)
+               (get-tamano-file file)
                (get-seguridad-file file)
                (get-ubicacion-file file))))
 
@@ -216,7 +216,7 @@
                (get-fecha-modificacion-file file)
                user
                (get-compartidos-user-file file)
-               (get-tamaño-file file)
+               (get-tamano-file file)
                (get-seguridad-file file)
                (get-ubicacion-file file))))
 
@@ -235,7 +235,7 @@
                (get-fecha-modificacion-file file)
                (get-creador-user-file file)
                users
-               (get-tamaño-file file)
+               (get-tamano-file file)
                (get-seguridad-file file)
                (get-ubicacion-file file))))
 
@@ -245,8 +245,8 @@
 ; Recursión: no aplica
 ; Descripción: Esta función toma un archivo y un tamaño como argumentos y devuelve un nuevo archivo con el tamaño actualizado.
 
-(define set-tamaño-file 
-  (lambda (file tamaño)
+(define set-tamano-file 
+  (lambda (file tamano)
     (make-file (get-nombre-file file)
                (get-contenido-file file)
                (get-extension-file file)
@@ -254,7 +254,7 @@
                (get-fecha-modificacion-file file)
                (get-creador-user-file file)
                (get-compartidos-user-file file)
-               tamaño
+               tamano
                (get-seguridad-file file)
                (get-ubicacion-file file))))
 
@@ -273,7 +273,7 @@
                (get-fecha-modificacion-file file)
                (get-creador-user-file file)
                (get-compartidos-user-file file)
-               (get-tamaño-file file)
+               (get-tamano-file file)
                seguridad
                (get-ubicacion-file file))))
 
@@ -293,6 +293,6 @@
                (get-fecha-modificacion-file file)
                (get-creador-user-file file)
                (get-compartidos-user-file file)
-               (get-tamaño-file file)
+               (get-tamano-file file)
                (get-seguridad-file file)
                ubicacion)))

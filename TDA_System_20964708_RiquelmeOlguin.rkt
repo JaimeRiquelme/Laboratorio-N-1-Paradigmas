@@ -70,6 +70,10 @@
 ;Descripción: Esta función toma un sistema system como argumento y devuelve la letra de unidad actual del sistema.
 
 (define get-current-drive-system (lambda (system)(cadr(reverse system))))
+;Nombre del selector: get-papelera-system
+;Dominio: system
+;Recorrido: lista con contenido pepelera.
+;Descripción: Esta función toma un sistema system como argumento y devuelve la papelera del sistema.
 
 (define get-papelera-system(lambda(system)(car(reverse system))))
 
@@ -89,6 +93,10 @@
 
 (define set-drive-system(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (get-ruta-system system)
                  (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))))
+;Nombre del modificador: set-drive-system2
+;Dominio: system y drive
+;Recorrido: system y drive
+;Descripción: Esta función toma un sistema system y un drive drive como argumentos, y devuelve un nuevo sistema que tiene la lista de unidades actualizada.
 (define set-drive-system2(lambda (system drive)(make-system (get-nombre-system system) drive (get-usuarios-system system) (string-append(string(car(get-current-drive-system system))) ":/")
                  (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))))
 
@@ -419,6 +427,17 @@
             (set-drive-system system (buscardriverename system nombrecarpeta nuevonombre 2)));modificar el nombre al file
          system))))
 
+
+;documentar
+
+(define dir
+  (lambda (system)
+    (define (inner-dir args)
+      (if (null? args)
+          (alistaractual system)
+          args))
+    (inner-dir '())))
+
 ;Nombre de la función: format
 ;Dominio: system X letra X nombre
 ;Recorrido: sistema actualizado
@@ -450,7 +469,7 @@
   (lambda (nombre extencion contenido . seguridad)
     (if(and(string? nombre)(string? extencion)(string? contenido).(char? seguridad))
       (let ((fecha (fecha-actual)))
-        (make-folder (string-upcase nombre)
+        (make-file (string-upcase nombre)
                      extencion
                      contenido
                      fecha
@@ -949,7 +968,7 @@
        #t
        #f)))
 
-; Nombre de la función: SyMDrive9
+; Nombre de la función: buscarcopia
 ; Dominio: system X nombrecopia
 ; Recorrido: resultado de la función copia, un folder, un archivo o '()
 ; Recursión: recursión de cola
@@ -1225,13 +1244,6 @@
 
 
 
-(define dir
-  (lambda (system)
-    (define (inner-dir args)
-      (if (null? args)
-          (alistaractual system)
-          args))
-    (inner-dir '())))
 
 (define alistaractual
   (lambda (system)
