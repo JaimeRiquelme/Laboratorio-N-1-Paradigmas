@@ -125,12 +125,36 @@
 (define set-fecha-system(lambda (system fecha)(make-system (get-nombre-system system) (get-drive-system system) (get-usuarios-system system) (get-ruta-system system)
                  fecha (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))))
 
+; Nombre de la función: set-logeado
+; Dominio: system X user
+; Recorrido: system actualizado
+; Recursión: No aplica
+; Descripción: Esta función toma un sistema y un usuario como argumentos. Devuelve un nuevo sistema con el usuario actualizado,
+;conservando todos los demás campos del sistema original.
+
+
 (define set-logeado(lambda (system user)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)(get-ruta-system system)
                  (get-fecha-system system)user(get-current-drive-system system)(get-papelera-system system))))
+
+; Nombre de la función: set-current-drive
+; Dominio: system X current-drive
+; Recorrido: system actualizado
+; Recursión: No aplica
+; Descripción: Esta función toma un sistema y un current-drive como argumentos. Devuelve un nuevo sistema con el drive
+;actual actualizado, conservando todos los demás campos del sistema original.
+
                  
 
 (define set-current-drive(lambda (system current-drive)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)(get-ruta-system system)
                  (get-fecha-system system)(get-logeado-system system) current-drive(get-papelera-system system))))
+
+; Nombre de la función: set-papelera
+; Dominio: system X basura
+; Recorrido: system actualizado
+; Recursión: No aplica
+; Descripción: Esta función toma un sistema y un elemento basura como argumentos. Devuelve un nuevo sistema con
+;el elemento basura añadido a la papelera, conservando todos los demás campos del sistema original.
+
 
 (define set-papelera(lambda (system basura)(make-system (get-nombre-system system)(get-drive-system system)(get-usuarios-system system)(get-ruta-system system)
                  (get-fecha-system system)(get-logeado-system system) (get-current-drive-system system)(cons basura (get-papelera-system system)))))
@@ -342,7 +366,15 @@
       (set-drive-system system (SyMDrive3 system filecreado ))))))
 
 
-;comentar esto
+; Nombre de la función: del
+; Dominio: system
+; Recorrido: función
+; Recursión: No aplica
+; Descripción: Esta función toma un sistema como argumento y devuelve otra función que toma una condición como argumento.
+;Si la condición es una cadena de caracteres, busca una copia de un archivo o carpeta con el nombre especificado en la ruta actual del sistema.
+;Si encuentra una coincidencia, agrega el elemento encontrado a la papelera y devuelve un nuevo sistema con la papelera actualizada.
+;Si la condición no es una cadena de caracteres o no se encuentra ninguna coincidencia, devuelve el sistema sin cambios.
+
 
 (define del
   (lambda (system)
@@ -428,7 +460,12 @@
          system))))
 
 
-;documentar
+; Nombre de la función: dir
+; Dominio: system
+; Recorrido: lista de directorios
+; Recursión: No aplica
+; Descripción: Esta función toma un sistema como argumento. Si no se proporcionan argumentos adicionales,
+;la función devuelve la lista de directorios en el directorio actual del sistema. Si se proporcionan argumentos adicionales, la función devuelve los argumentos sin modificar.
 
 (define dir
   (lambda (system)
@@ -437,6 +474,7 @@
           (alistaractual system)
           args))
     (inner-dir '())))
+
 
 ;Nombre de la función: format
 ;Dominio: system X letra X nombre
@@ -458,6 +496,8 @@
 
 
 ;-----------------OTRAS-FUNCIONES----------------------------------------------------------------------------------------------------;
+
+
 ;Nombre de la función: file
 ;Dominio: system X nombre X extensión X contenido X seguridad (opcional)
 ;Recorrido: archivo creado
@@ -578,7 +618,7 @@
         (if (null? drives)
             lista
             (if (equal? (string (get-letra-drive (car drives))) letra)
-                (if (member nombre (map car(cadddr (car drives))))
+                (if (member nombre (listarfolders3 system (car drives)))
                     (buscador (cdr drives) (append lista (list (car drives))))
                     (let ((new-drive (set-contenido-drive (folder system nombre) (car drives))))
                       (buscador (cdr drives) (append lista (list new-drive)))))
@@ -1160,7 +1200,6 @@
                 (buscador (cdr drives) (append lista (list (car drives))))))))
     (buscador (cadr system) '())))
 
-;-----
 
 
 
@@ -1243,6 +1282,11 @@
 
 
 
+; Nombre de la función: alistaractual
+; Dominio: system
+; Recorrido: lista de elementos en el directorio actual
+; Recursión: No aplica
+; Descripción: Esta función toma un sistema como argumento y devuelve la lista de elementos (carpetas y archivos) en el directorio actual del sistema.
 
 
 (define alistaractual
@@ -1251,6 +1295,13 @@
             (buscardrivelistar system 1);modificar el nombre al folder
             (buscardrivelistar system 2))));modificar el nombre al file
 
+
+; Nombre de la función: buscardrivelistar
+; Dominio: system X opcion (entero)
+; Recorrido: cadena de caracteres o lista de elementos
+; Recursión: recursion de cola
+; Descripción: Esta función toma un sistema y una opción como argumentos. Busca el drive en el sistema que coincide con el drive actual
+;y devuelve la lista de carpetas (opción 1) o la lista de archivos (opción 2) en el directorio actual.
 
 
 (define buscardrivelistar
@@ -1263,6 +1314,14 @@
                    (listarfolders system (car drives) opcion)
                 (buscador (cdr drives))))))
     (buscador (cadr system))))
+
+; Nombre de la función: listarfolders
+; Dominio: system X drive X opcion (entero)
+; Recorrido: string con nombres a listar
+; Recursión: recursion de cola
+; Descripción: Esta función toma un sistema, un drive y una opción como argumentos. Devuelve una cadena de caracteres que representa
+;los nombres de las carpetas en el directorio actual del sistema si la opción es 1, o busca y lista los archivos en el directorio actual si la opción es 2.
+
 
 (define listarfolders
   (lambda(system drive opcion)
@@ -1277,6 +1336,14 @@
                  (buscar (cdr folders) lista)))))              
     (buscar (get-contenido-drive drive) "")))
 
+; Nombre de la función: buscarfolderlistar
+; Dominio: system X drive X listacompleta (cadena de caracteres)
+; Recorrido: String con nombres a listar
+; Recursión: recursion de cola
+; Descripción: Esta función toma un sistema, un drive y una cadena de caracteres listacompleta como argumentos.
+;Busca la carpeta en el drive que coincide con el directorio actual del sistema y devuelve la lista de archivos en esa carpeta, concatenada a listacompleta.
+
+
 (define buscarfolderlistar
   (lambda(system drive listacompleta)
     (define buscar
@@ -1288,6 +1355,14 @@
               (buscar (cdr folders))))))
     (buscar (get-contenido-drive drive))))
 
+; Nombre de la función: buscarfilelistar
+; Dominio: system X folder X listacompleta (cadena de caracteres)
+; Recorrido: String con nombres de folders a listar
+; Recursión: recursion de cola
+; Descripción: Esta función toma un sistema, una carpeta y una cadena de caracteres listacompleta como argumentos.
+;Devuelve una cadena de caracteres que representa los nombres de los archivos en la carpeta dada, concatenada a listacompleta.
+
+
 (define buscarfilelistar 
   (lambda (system folder listacompleta)
     (define buscar2
@@ -1296,6 +1371,14 @@
            (string-append lista listacompleta)          
            (buscar2 (cdr files)(string-append lista "\n" (get-nombre-file (car files)))))))
     (buscar2 (get-contenido-folder folder) "")))
+
+; Nombre de la función: buscardrivelistar2
+; Dominio: system X opcion (entero)
+; Recorrido: String con nombre de folders a listar o lista de elementos
+; Recursión: recursion de cola
+; Descripción: Esta función toma un sistema y una opción como argumentos. Busca el drive en el sistema que coincide con el drive actual
+;y devuelve la lista de carpetas (opción 1) o la lista de archivos (opción 2) en el directorio actual.
+
 
 (define buscardrivelistar2
   (lambda (system opcion)
@@ -1307,6 +1390,14 @@
                    (listarfolders system (car drives) opcion)
                 (buscador (cdr drives))))))
     (buscador (cadr system))))
+
+
+; Nombre de la función: listarfolders2
+; Dominio: system X drive X opcion (entero)
+; Recorrido: String con folders a listar
+; Recursión: recursion de cola
+; Descripción: Esta función toma un sistema, un drive y una opción como argumentos. Devuelve una cadena de caracteres que representa
+;los nombres de las carpetas en el directorio actual del sistema si la opción es 1, o busca y lista los archivos en el directorio actual si la opción es 2.
 
 (define listarfolders2
   (lambda(system drive opcion)
@@ -1320,6 +1411,24 @@
                  (buscar (cdr folders)(string-append lista "\n" (get-nombre-folder (car folders))))
                  (buscar (cdr folders) lista)))))              
     (buscar (get-contenido-drive drive) "")))
+
+; Nombre de la función: listarfolders3
+; Dominio: system X drive
+; Recorrido: lista de carpetas
+; Recursión: recursion de cola
+; Descripción: Esta función toma un sistema y un drive como argumentos. Devuelve una lista de carpetas que tienen la misma ubicación que la ruta del sistema actual.
+
+
+(define listarfolders3
+  (lambda(system drive)
+    (define buscar
+      (lambda(folders lista)
+           (if(null? folders)
+              lista
+              (if(equal? (get-ruta-system system)(get-ubicacion-folder(car folders)))
+                 (buscar (cdr folders)(append lista (car folders)))
+                 (buscar (cdr folders) lista)))))              
+    (buscar (get-contenido-drive drive) '())))
 
   
   
