@@ -155,7 +155,9 @@
 (define S16b ((run S16 md) "FoLdEr1"));intenta crear una carpeta que ya existe, probando el case sensitive. no deberia crearla
 (define S16c ((run S16 md) 12345)); intenta crear una carpeta ingresando un entero en vez de un nombre valido.
 (define S16d ((run S16 md) "FoLdEr4"));crea una carpeta respetando que esta misma se cree en mayusculas.
-(define S16e ((run S17 md) "folder2"));crea una carpeta respetando que esta misma se cree en mayusculas.
+(define S16e ((run S16 cd) "folder2"));entra a folder2
+(define S16f ((run S16e md) "folder2"));crea una carpeta con el mismo nombre que su ubicacion (folder2), se crea folder2 dentro de folder2, lo cual el sistema lo admite.
+
 
 (define S26a ((run S26 cd) "/")); se utiliza el "/" ya estando en la raiz.
 (define S26b ((run S26 cd) ".."));intenta realizar un .. estando en la raiz. no deberia de actuar y seguir en la raiz.

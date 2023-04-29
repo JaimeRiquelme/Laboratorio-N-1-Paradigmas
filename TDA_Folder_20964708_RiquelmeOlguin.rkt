@@ -54,7 +54,7 @@
 ; Descripción: Esta función toma un folder como argumento y devuelve la fecha de modificación del folder.
 
 
-(define get-fecha-modif-folder(lambda (folder)(caddr folder)))
+(define get-fecha-modif-folder(lambda (folder)(cadddr folder)))
 
 ; Nombre de la función: get-creador-user-folder
 ; Dominio: folder
@@ -63,7 +63,7 @@
 ; Descripción: Esta función toma un folder como argumento y devuelve el usuario creador del folder.
 
 
-(define get-creador-user-folder(lambda (folder)(cadddr folder)))
+(define get-creador-user-folder(lambda (folder)(cadr(cdddr folder))))
 
 ; Nombre de la función: get-compartidos-user-folder
 ; Dominio: folder
@@ -72,7 +72,7 @@
 ; Descripción: Esta función toma un folder como argumento y devuelve la lista de usuarios con los que se comparte el folder.
 
 
-(define get-compartidos-user-folder(lambda (folder)(cadddr folder)))
+(define get-compartidos-user-folder(lambda (folder)(caddr(cdddr folder))))
 
 ; Nombre de la función: get-tamano-folder
 ; Dominio: folder
@@ -81,7 +81,7 @@
 ; Descripción: Esta función toma un folder como argumento y devuelve el tamaño del folder.
 
 
-(define get-tamano-folder(lambda (folder)(car (cddddr folder))))
+(define get-tamano-folder(lambda (folder)(caddr (cddddr folder))))
 
 ; Nombre de la función: get-cantidad-archivos-folder
 ; Dominio: folder
@@ -90,7 +90,7 @@
 ; Descripción: Esta función toma un folder como argumento y devuelve la cantidad de archivos en el folder.
 
 
-(define get-cantidad-archivos-folder(lambda (folder)(cadr (cddddr folder))))
+(define get-cantidad-archivos-folder(lambda (folder)(caddr (reverse folder))))
 
 ; Nombre de la función: get-seguridad-folder
 ; Dominio: folder
@@ -99,7 +99,7 @@
 ; Descripción: Esta función toma un folder como argumento y devuelve el nivel de seguridad del folder.
 
 
-(define get-seguridad-folder(lambda (folder)(caddr (cddddr folder))))
+(define get-seguridad-folder(lambda (folder)(cadr (reverse folder))))
 
 ; Nombre de la función: get-ubicacion-folder
 ; Dominio: folder

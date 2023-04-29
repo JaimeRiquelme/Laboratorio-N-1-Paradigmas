@@ -381,9 +381,7 @@
     (lambda (condicion)
       (if(string? condicion)
          (let ((copia (buscarcopia system condicion (get-ruta-system system))))
-           (if (equal? copia #f)
-               system
-               (del2 (set-papelera system (buscarcopia system condicion (get-ruta-system system))) condicion)))
+               (del2 (set-papelera system (buscarcopia system condicion (get-ruta-system system))) condicion))
          system))))
 
 
