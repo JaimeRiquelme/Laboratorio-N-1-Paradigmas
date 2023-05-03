@@ -376,13 +376,25 @@
 ;Si la condición no es una cadena de caracteres o no se encuentra ninguna coincidencia, devuelve el sistema sin cambios.
 
 
-(define del
+#|(define del1
   (lambda (system)
     (lambda (condicion)
       (if(string? condicion)
          (let ((copia (buscarcopia system condicion (get-ruta-system system))))
                (del2 (set-papelera system (buscarcopia system condicion (get-ruta-system system))) condicion))
          system))))
+|#
+
+(define del
+  (lambda (system)
+    (lambda (condicion)
+      (if (string? condicion)
+          (if(equal? condicion "*.*")
+               (del2 (set-papelera system (buscarcopia system condicion (get-ruta-system system))) condicion)
+               (if(equal? (buscarcopia system condicion (get-ruta-system system)) #f)
+                  system
+                  (del2 (set-papelera system (buscarcopia system condicion (get-ruta-system system)))condicion)))
+          system))))
 
 
 
@@ -489,6 +501,15 @@
          (make-system (get-nombre-system system) (buscarformat system letra nombre) (get-usuarios-system system) (get-ruta-system system)
                  (get-fecha-system system) (get-logeado-system system)(get-current-drive-system system)(get-papelera-system system))
          system))))
+
+
+#|(define (plus-one s)
+  (list->string (map (lambda (c) (integer->char (+ (char->integer c) 1))) (string->list s))))
+
+
+(define (minus-one s)
+  (list->string (map (lambda (c) (integer->char (- (char->integer c) 1))) (string->list s))))
+|#
 
 
 
