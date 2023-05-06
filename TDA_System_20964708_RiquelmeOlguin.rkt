@@ -1311,8 +1311,8 @@
 (define alistaractual
   (lambda (system)
     (if(esraiz? system (get-ruta-system system))
-            (buscardrivelistar system 1);modificar el nombre al folder
-            (buscardrivelistar system 2))));modificar el nombre al file
+            (buscardrivelistar system 1)
+            (buscardrivelistar system 2))))
 
 
 ; Nombre de la función: buscardrivelistar
@@ -1364,15 +1364,18 @@
 
 
 (define buscarfolderlistar
-  (lambda(system drive listacompleta)
+  (lambda (system drive listacompleta)
     (define buscar
-      (lambda(folders)
-        (if(null? folders)
-           listacompleta
-           (if(equal? (get-nombre-folder(car folders))(carpetactual system))                             
-              (buscarfilelistar system (car folders) listacompleta)
-              (buscar (cdr folders))))))
+      (lambda (folders)
+        (if (null? folders)
+            listacompleta
+            (let ((current-folder (car folders)))
+              (if (and (equal? (get-nombre-folder current-folder) (carpetactual system))
+                       (not (equal? (get-ruta-system system) (get-ubicacion-folder current-folder))))
+                  (buscarfilelistar system current-folder listacompleta)
+                  (buscar (cdr folders)))))))
     (buscar (get-contenido-drive drive))))
+
 
 ; Nombre de la función: buscarfilelistar
 ; Dominio: system X folder X listacompleta (cadena de caracteres)

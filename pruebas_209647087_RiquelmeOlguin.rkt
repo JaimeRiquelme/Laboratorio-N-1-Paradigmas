@@ -204,9 +204,12 @@
 (define S55f ((run S55e ren) "fOo3.doCX" "newFile3"));se renombra foo3 que lo contiene folder3.
 (define S55g ((run S55f ren) "newFile3" 12345));se intenta modificar newFile3 ingresando un nombre invalido. no realiza cambios.
 
-
-
-
+(display "\n-----------SCRIPT DE PRUEBA-------------")
+(display (run S51 dir));lista archivos de S51
+(display (run S33 dir));lista archivos de S33
+(display "\nCONTENIDO DE FOLDER1 EN S55h")
+(define S55h ((run S35d md) "FoLdEr1")); creo la carpeta folder1 "dentro" de folder1.
+(display (run S55h dir));listo todo el contenido de folder1, este tiene dentro una carpeta llamada folder1, además de los files.
 
 
 
