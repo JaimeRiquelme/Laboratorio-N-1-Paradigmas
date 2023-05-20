@@ -63,8 +63,8 @@
 (define S34 ((run S33 add-file) (file "foo3.docx" "docx" "hello world 3")))
 (define S35 ((run S34 add-file) (file "goo4.docx" "docx" "hello world 4" #\h #\r)))
 ;eliminando archivos
-(define S36 ((run S35 del) "*.txt"))
-(define S37 ((run S35 del) "f*.docx"))
+(define S36 ((run S35 del) "*.txt")) ;no implementado, devuelve system
+(define S37 ((run S35 del) "f*.docx"));no implementado, devuelve system
 (define S38 ((run S35 del) "goo4.docx"))
 (define S39 ((run S35 cd) ".."))
 (define S40 ((run S35 del) "folder1"))
